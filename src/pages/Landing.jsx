@@ -7,9 +7,8 @@ import {
   Vote, 
   Users, 
   ShieldCheck, 
-  FileText, 
-  UserCheck, 
-  Lock 
+  FileText,
+  UserCheck
 } from 'lucide-react';
 
 const Landing = () => {

@@ -1,44 +1,87 @@
 import { useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 
-const BILL_TOPICS = ['All topics', 'Finance', 'Health', 'Justice', 'Technology', 'Environment', 'Education'];
+const BILL_TOPICS = ['All topics', 'Judiciary', 'Public Health', 'Budget', 'Education', 'Energy'];
+
+const HOW_STEPS = [
+  { t: '1. Introduced', d: "A member proposes the bill and it's formally read to the Assembly for the first time." },
+  { t: '2. In committee', d: 'A specialist committee examines the bill in detail and can hear public and expert testimony.' },
+  { t: '3. Debated', d: "The full Assembly debates the bill's principles in the second reading." },
+  { t: '4. Final vote', d: 'Members vote clause-by-clause and on the bill as a whole in the third reading.' },
+  { t: '5. Awaiting sign-off', d: 'A passed bill goes for formal sign-off before it can take effect.' },
+  { t: '6. Now law', d: 'The bill is enacted and becomes part of the law of the land.' },
+];
 
 const Bills = () => {
   const { bills } = useApp();
-  const { globalSearch } = useOutletContext() || { globalSearch: '' };
-  const [search, setSearch] = useState('');
   const [topic, setTopic] = useState('All topics');
+  const [showSteps, setShowSteps] = useState(false);
 
-  const query = (search || globalSearch).trim().toLowerCase();
-
-  const filteredBills = bills.filter((b) => {
-    const matchesTopic = topic === 'All topics' || b.category.toLowerCase() === topic.toLowerCase();
-    const matchesSearch = !query || b.title.toLowerCase().includes(query) || b.summary.toLowerCase().includes(query);
-    return matchesTopic && matchesSearch;
-  });
+  const filteredBills = bills.filter((b) => topic === 'All topics' || b.category.toLowerCase() === topic.toLowerCase());
 
   return (
     <div>
-      <h2 style={{ fontSize: '24px', marginBottom: '6px' }}>What's being decided, in plain language</h2>
-      <p style={{ color: 'var(--text-muted)', fontSize: '13.5px', maxWidth: '65ch', marginBottom: '20px' }}>
-        Every bill currently before the Assembly, what it means for you, and where it stands in the process.
-      </p>
+      <div className="public-card" style={{ marginBottom: '16px', padding: 0, overflow: 'hidden' }}>
+        <button
+          type="button"
+          onClick={() => setShowSteps((s) => !s)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            width: '100%',
+            padding: '14px 18px',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          <span>
+            <span style={{ display: 'block', fontSize: '14px', fontWeight: 700 }}>How a bill becomes law</span>
+            <span style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Every bill passes through the same six stages before it can take effect.
+            </span>
+          </span>
+          <ChevronDown
+            size={16}
+            style={{
+              transform: showSteps ? 'rotate(180deg)' : 'none',
+              transition: 'transform 0.15s ease',
+              flexShrink: 0,
+              color: 'var(--text-muted)',
+            }}
+          />
+        </button>
+        {showSteps && (
+          <div style={{ padding: '4px 4px 8px', borderTop: '1px solid var(--border)' }}>
+            <div className="steps-rail">
+              {HOW_STEPS.map((s, idx) => (
+                <div key={idx} className="step-card">
+                  <div className="step-num">{idx + 1}</div>
+                  <h4>{s.t}</h4>
+                  <p>{s.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
-      <div className="public-filter-bar">
-        <input
-          type="text"
-          placeholder="Search bills by title or topic…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <select value={topic} onChange={(e) => setTopic(e.target.value)}>
-          {BILL_TOPICS.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+      <div className="bills-topic-chips-bar">
+        {BILL_TOPICS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            className={`bills-topic-chip ${topic === t ? 'active' : ''}`}
+            onClick={() => setTopic(t)}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
       <div className="public-bills-grid">

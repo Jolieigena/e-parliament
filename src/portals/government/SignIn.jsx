@@ -34,12 +34,15 @@ const GovernmentSignIn = () => {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <header className="portal-topbar" style={{ position: 'relative', zIndex: 20 }}>
         <div className="portal-topbar-left">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-strong)' }}>
+          <Link
+            to="/public"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-strong)', textDecoration: 'none' }}
+          >
             <div style={{ color: 'var(--accent)', display: 'flex' }}>
               <BrandMark size={22} />
             </div>
             E-Parliament
-          </div>
+          </Link>
         </div>
         <div className="portal-topbar-right">
           <ThemeToggle />

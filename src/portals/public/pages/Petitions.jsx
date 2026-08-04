@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Megaphone } from 'lucide-react';
 
 const INITIAL_PETITIONS = [
   {
@@ -47,10 +47,11 @@ const Petitions = () => {
 
   return (
     <div>
-      <h2 style={{ fontSize: '24px', marginBottom: '6px' }}>Have your say</h2>
-      <p style={{ color: 'var(--slate)', fontSize: '13.5px', maxWidth: '65ch', marginBottom: '20px' }}>
-        Petitions with 10,000 or more signatures receive a written response from the relevant committee. Petitions with 50,000 or more are considered for a floor debate.
-      </p>
+      <div className="petition-rule-strip">
+        <span className="petition-rule-label"><Megaphone size={13} /> How petitions are actioned</span>
+        <span className="petition-rule-chip">10,000+ signatures &rarr; committee response</span>
+        <span className="petition-rule-chip">50,000+ signatures &rarr; floor debate</span>
+      </div>
 
       <div className="petitions-grid">
         {petitions.map((pet) => {

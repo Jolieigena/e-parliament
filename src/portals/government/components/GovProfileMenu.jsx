@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogOut, ChevronDown } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import Avatar from '../../../components/ui/Avatar';
+import PortalMenu from '../../../components/ui/PortalMenu';
 
 const GovProfileMenu = () => {
   const { currentGovUser, institutions, govLogout } = useApp();
@@ -37,6 +38,7 @@ const GovProfileMenu = () => {
       </button>
       {open && (
         <div className="topbar-dropdown profile-dropdown">
+          <PortalMenu />
           <button type="button" onClick={handleLogout}>
             <LogOut size={15} /> Sign out
           </button>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, FilePlus2, FileEdit, CheckCircle2, Inbox } from 'lucide-react';
+import { FilePlus2, FileEdit, CheckCircle2, Inbox } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { CATEGORY_ICONS } from '../../../mock/categoryMeta';
 import Card from '../../../components/ui/Card';
@@ -28,9 +28,6 @@ const Legislation = () => {
 
   return (
     <div>
-      <h1 className="portal-page-title">
-        <span className="page-title-icon-wrap"><FileText size={20} /></span> Legislation
-      </h1>
       <p className="portal-page-subtitle">Bills sponsored by your institution, and their progress through Parliament.</p>
 
       <Card className="dash-section">

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { Mail, Check, X, Send, Search, Sparkles, CheckCircle2, UserRound } from 'lucide-react';
+import { Mail, Check, X, Send } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { PARTIES } from '../../../mock/entities';
 
@@ -43,8 +42,6 @@ function getMpPhoto(mp, index) {
 
 const Members = () => {
   const { members } = useApp();
-  const { globalSearch } = useOutletContext() || { globalSearch: '' };
-  const [search, setSearch] = useState('');
   const [partyFilter, setPartyFilter] = useState('All parties');
   const [activeMp, setActiveMp] = useState(null);
   const [activeMpIndex, setActiveMpIndex] = useState(0);
@@ -52,15 +49,11 @@ const Members = () => {
   const [subjectText, setSubjectText] = useState('');
   const [sentSuccess, setSentSuccess] = useState(false);
 
-  const query = (search || globalSearch).trim().toLowerCase();
-
   const mps = members.filter((m) => m.roles.includes('MP'));
 
   const filteredMps = mps.filter((m) => {
     const pName = PARTIES.find((p) => p.id === m.party)?.name || 'Independent';
-    const matchesParty = partyFilter === 'All parties' || pName === partyFilter;
-    const matchesSearch = !query || m.name.toLowerCase().includes(query) || (m.constituency && m.constituency.toLowerCase().includes(query));
-    return matchesParty && matchesSearch;
+    return partyFilter === 'All parties' || pName === partyFilter;
   });
 
   const handleSendMessage = (e) => {
@@ -77,17 +70,7 @@ const Members = () => {
 
   return (
     <div>
-      {/* PAGE HEADER */}
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '6px', color: 'var(--text-strong)' }}>
-          Your Representatives (120 Members)
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '14px', maxWidth: '65ch', margin: 0 }}>
-          Search by representative name or constituency to inspect voting loyalty scores, attendance records, and send a direct message to their office.
-        </p>
-      </div>
-
-      {/* PARTY CHIPS & SEARCH BAR */}
+      {/* PARTY CHIPS */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {PARTY_CHIPS.map((chip) => (
@@ -102,16 +85,6 @@ const Members = () => {
               <span style={{ opacity: 0.6, fontSize: '10.5px' }}>({chip.count})</span>
             </button>
           ))}
-        </div>
-
-        <div className="public-header-search" style={{ width: '260px' }}>
-          <Search size={14} color="var(--text-muted)" />
-          <input
-            type="text"
-            placeholder="Search name or constituency…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
         </div>
       </div>
 

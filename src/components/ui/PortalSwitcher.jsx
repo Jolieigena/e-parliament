@@ -31,11 +31,13 @@ const PORTALS = [
   },
 ];
 
-const PortalSwitcher = () => {
+const PortalSwitcher = ({ variant = 'topbar', collapsed = false }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isSidebar = variant === 'sidebar';
 
   const currentPath = location.pathname;
 
@@ -63,49 +65,104 @@ const PortalSwitcher = () => {
     navigate(portal.path);
   };
 
+  const wrapperStyle = isSidebar
+    ? { position: 'relative', width: '100%' }
+    : { position: 'relative', display: 'inline-block' };
+
+  const btnStyle = isSidebar
+    ? {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        gap: '8px',
+        width: '100%',
+        padding: collapsed ? '10px 0' : '10px 12px',
+        borderRadius: 'var(--radius-sm)',
+        background: open ? 'var(--sidebar-hover-bg)' : 'transparent',
+        border: 'none',
+        color: 'var(--sidebar-text)',
+        fontSize: '12.5px',
+        fontWeight: 600,
+        cursor: 'pointer',
+        whiteSpace: 'nowrap',
+        transition: 'background 0.15s ease',
+      }
+    : {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '7px',
+        padding: '6px 14px',
+        borderRadius: '100px',
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        color: 'var(--text-strong)',
+        fontSize: '12.5px',
+        fontWeight: 600,
+        cursor: 'pointer',
+        boxShadow: 'var(--shadow-sm)',
+        transition: 'all 0.15s ease',
+        whiteSpace: 'nowrap',
+      };
+
+  const menuStyle = {
+    position: 'absolute',
+    width: '280px',
+    background: 'var(--surface)',
+    border: '1px solid var(--border)',
+    borderRadius: '16px',
+    boxShadow: 'var(--shadow-lg)',
+    padding: '8px',
+    zIndex: 999,
+    ...(isSidebar
+      ? { bottom: 'calc(100% + 8px)', left: 0 }
+      : { top: 'calc(100% + 8px)', right: 0 }),
+  };
+
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
-      <button
-        type="button"
-        className="portal-switcher-btn"
-        onClick={() => setOpen(!open)}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '7px',
-          padding: '6px 14px',
-          borderRadius: '100px',
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          color: 'var(--text-strong)',
-          fontSize: '12.5px',
-          fontWeight: 600,
-          cursor: 'pointer',
-          boxShadow: 'var(--shadow-sm)',
-          transition: 'all 0.15s ease',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        <CurrentIcon size={14} color="var(--accent)" />
-        <span>{currentPortal.name}</span>
-        <ChevronDown size={13} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease', opacity: 0.7 }} />
-      </button>
+    <div ref={dropdownRef} style={wrapperStyle}>
+      {isSidebar ? (
+        <button
+          type="button"
+          className={`portal-sidebar-switcher ${open ? 'open' : ''} ${collapsed ? 'collapsed' : ''}`}
+          onClick={() => setOpen(!open)}
+          title={collapsed ? currentPortal.name : undefined}
+        >
+          <span className="portal-sidebar-switcher-chip">
+            <CurrentIcon size={14} />
+          </span>
+          {!collapsed && (
+            <>
+              <span className="portal-sidebar-switcher-text">
+                <span className="portal-sidebar-switcher-label">Portal</span>
+                <span className="portal-sidebar-switcher-name">{currentPortal.name}</span>
+              </span>
+              <ChevronDown size={14} className="portal-sidebar-switcher-chevron" />
+            </>
+          )}
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="portal-switcher-btn"
+          onClick={() => setOpen(!open)}
+          style={btnStyle}
+        >
+          <CurrentIcon size={14} color="var(--accent)" />
+          <span>{currentPortal.name}</span>
+          <ChevronDown
+            size={13}
+            style={{
+              transform: open ? 'rotate(180deg)' : 'none',
+              transition: 'transform 0.15s ease',
+              opacity: 0.7,
+              marginLeft: 'auto',
+            }}
+          />
+        </button>
+      )}
 
       {open && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            right: 0,
-            width: '280px',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '16px',
-            boxShadow: 'var(--shadow-lg)',
-            padding: '8px',
-            zIndex: 999,
-          }}
-        >
+        <div style={menuStyle}>
           <div style={{ fontSize: '10.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', padding: '6px 10px 8px 10px' }}>
             Switch System Portal
           </div>

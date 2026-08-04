@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, FileText, Users2 } from 'lucide-react';
 import { useApp } from '../../mock/store';
 
-const GlobalSearch = () => {
+const GlobalSearch = ({ pathPrefix = '/internal' }) => {
   const { bills, committees } = useApp();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
@@ -75,7 +75,7 @@ const GlobalSearch = () => {
                 <div className="search-group">
                   <span className="search-group-label">Bills</span>
                   {billMatches.map((b) => (
-                    <button type="button" key={b.id} onClick={() => go(`/internal/bills/${b.id}`)}>
+                    <button type="button" key={b.id} onClick={() => go(`${pathPrefix}/bills/${b.id}`)}>
                       <FileText size={14} /> {b.title}
                     </button>
                   ))}
@@ -85,7 +85,7 @@ const GlobalSearch = () => {
                 <div className="search-group">
                   <span className="search-group-label">Committees</span>
                   {committeeMatches.map((c) => (
-                    <button type="button" key={c.id} onClick={() => go(`/internal/committees/${c.id}`)}>
+                    <button type="button" key={c.id} onClick={() => go(`${pathPrefix}/committees/${c.id}`)}>
                       <Users2 size={14} /> {c.name}
                     </button>
                   ))}

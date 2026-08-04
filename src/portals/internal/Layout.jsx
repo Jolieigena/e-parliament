@@ -74,6 +74,10 @@ const Layout = () => {
             <FileBarChart size={17} /> <span>Reports</span>
           </NavLink>
         </nav>
+
+        <div className="portal-sidebar-footer">
+          <PortalSwitcher variant="sidebar" collapsed={collapsed} />
+        </div>
       </aside>
 
       <div className="portal-main">
@@ -93,7 +97,6 @@ const Layout = () => {
           <div className="portal-topbar-right">
             <LiveClock />
             <ThemeToggle />
-            <PortalSwitcher />
             <NotificationBell />
             <ProfileMenu />
           </div>

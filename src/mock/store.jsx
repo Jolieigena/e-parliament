@@ -11,6 +11,42 @@ import {
 
 const STORAGE_KEY = 'ep_internal_v1';
 
+const seedPublicIdeas = [
+  {
+    id: 'idea-1',
+    title: 'Citizen budget consultation',
+    category: 'Governance',
+    description:
+      'Publish the annual budget in plain language and open a public comment period before the final vote.',
+    submittedBy: 'Public',
+    date: '2026-07-02',
+    upvotes: 214,
+    voted: false,
+  },
+  {
+    id: 'idea-2',
+    title: 'Youth apprenticeship registry',
+    category: 'Employment',
+    description:
+      'Create a public register of government apprenticeship programmes so young people can find openings by region.',
+    submittedBy: 'Public',
+    date: '2026-07-11',
+    upvotes: 158,
+    voted: false,
+  },
+  {
+    id: 'idea-3',
+    title: 'Regional committee sitting days',
+    category: 'Accessibility',
+    description:
+      'Hold committee sittings in regional centres so citizens outside the capital can attend without travelling.',
+    submittedBy: 'Public',
+    date: '2026-07-19',
+    upvotes: 97,
+    voted: false,
+  },
+];
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -48,6 +84,7 @@ function initialState() {
     oversightRequests: seedOversightRequests,
     committeeRequests: seedCommitteeRequests,
     documents: seedDocuments,
+    publicIdeas: seedPublicIdeas,
     ...loaded,
     members: mergeById(seedMembers, loaded?.members),
     bills: mergeById(seedBills, loaded?.bills),
@@ -266,6 +303,30 @@ function reducer(state, action) {
         ),
       };
     }
+    case 'SUBMIT_IDEA': {
+      const { title, category, description } = action;
+      const newIdea = {
+        id: `idea-${Date.now()}`,
+        title,
+        category,
+        description,
+        submittedBy: 'Public',
+        date: new Date().toISOString().slice(0, 10),
+        upvotes: 1,
+        voted: true,
+      };
+      return { ...state, publicIdeas: [newIdea, ...state.publicIdeas] };
+    }
+    case 'UPVOTE_IDEA': {
+      const { ideaId } = action;
+      return {
+        ...state,
+        publicIdeas: state.publicIdeas.map((i) => {
+          if (i.id !== ideaId || i.voted) return i;
+          return { ...i, upvotes: i.upvotes + 1, voted: true };
+        }),
+      };
+    }
     default:
       return state;
   }
@@ -310,6 +371,7 @@ export function AppProvider({ children }) {
       oversightRequests: state.oversightRequests,
       committeeRequests: state.committeeRequests,
       documents: state.documents,
+      publicIdeas: state.publicIdeas,
       govLogin: (govUserId) => dispatch({ type: 'GOV_LOGIN', govUserId }),
       govLogout: () => dispatch({ type: 'GOV_LOGOUT' }),
       submitGovernmentBill: (title, category, summary, institutionId) =>
@@ -324,6 +386,9 @@ export function AppProvider({ children }) {
         dispatch({ type: 'CREATE_OVERSIGHT_REQUEST', institutionId, subject, body, dueDate }),
       proposeAmendment: (billId, title, clause, originalText, proposedText, proposerId) =>
         dispatch({ type: 'PROPOSE_AMENDMENT', billId, title, clause, originalText, proposedText, proposerId }),
+      submitIdea: (title, category, description) =>
+        dispatch({ type: 'SUBMIT_IDEA', title, category, description }),
+      upvoteIdea: (ideaId) => dispatch({ type: 'UPVOTE_IDEA', ideaId }),
       callDivision: (billId, results) => dispatch({ type: 'CALL_DIVISION', billId, results }),
     }),
     [state, currentUser, currentGovUser],

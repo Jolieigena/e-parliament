@@ -1,13 +1,56 @@
 import { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
-import { Search, LogIn } from 'lucide-react';
+import { LogIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import BrandMark from '../../components/ui/BrandMark';
 import ThemeToggle from '../../components/ui/ThemeToggle';
+import GlobalSearch from '../../components/ui/GlobalSearch';
 import './public.css';
-import PortalSwitcher from '../../components/ui/PortalSwitcher';
+
+const GALLERY = [
+  {
+    url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80',
+    tag: 'Chamber',
+    title: 'Plenary Chamber',
+    caption: 'Ordinary sitting, National Assembly',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=900&q=80',
+    tag: 'Committee',
+    title: 'Committee hearings',
+    caption: 'Finance Committee in session',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=600&q=80',
+    tag: 'Floor',
+    title: 'Question time',
+    caption: 'Ministerial oral answers',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80',
+    tag: 'Procedural',
+    title: 'Laying of papers',
+    caption: 'Tabling of the 2026 Budget',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80',
+    tag: 'Ceremonial',
+    title: 'Head of State address',
+    caption: 'Opening of the new legislative session',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1200&q=80',
+    tag: 'Voting',
+    title: 'Voting lobby',
+    caption: 'Roll-call division in progress',
+  },
+];
 
 const Layout = () => {
-  const [globalSearch, setGlobalSearch] = useState('');
+  const [lightbox, setLightbox] = useState(null);
+
+  const openLightbox = (id) => setLightbox(id);
+  const stepLightbox = (dir) =>
+    setLightbox((cur) => (cur + dir + GALLERY.length) % GALLERY.length);
 
   return (
     <div className="public-portal-root">
@@ -34,31 +77,23 @@ const Layout = () => {
             <NavLink to="/public/sitting" className={({ isActive }) => (isActive ? 'active' : '')}>
               Watch &amp; attend
             </NavLink>
-            <NavLink to="/public/how-it-works" className={({ isActive }) => (isActive ? 'active' : '')}>
-              How it works
-            </NavLink>
             <NavLink to="/public/petitions" className={({ isActive }) => (isActive ? 'active' : '')}>
               Petitions
+            </NavLink>
+            <NavLink to="/public/ideas" className={({ isActive }) => (isActive ? 'active' : '')}>
+              Ideas &amp; requests
             </NavLink>
           </nav>
 
           <div style={{ flex: 1 }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div className="public-header-search">
-              <Search size={15} color="var(--text-muted)" />
-              <input
-                type="text"
-                placeholder="Search bills or your MP…"
-                value={globalSearch}
-                onChange={(e) => setGlobalSearch(e.target.value)}
-              />
-            </div>
+            <GlobalSearch pathPrefix="/public" />
 
             <ThemeToggle />
 
             <Link
-              to="/"
+              to="/internal/signin"
               className="btn btn-secondary btn-sm"
               style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '12.5px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px' }}
             >
@@ -70,11 +105,40 @@ const Layout = () => {
 
       {/* MAIN CONTENT AREA */}
       <main className="public-content">
-        <Outlet context={{ globalSearch }} />
+        <Outlet />
       </main>
 
       {/* SITE FOOTER */}
       <footer className="public-site-footer">
+        <div className="footer-gallery">
+          <div className="footer-gallery-head">
+            <div>
+              <span className="gov-offer-eyebrow">Media</span>
+              <h3>Parliament in pictures</h3>
+            </div>
+            <p>Moments from the Chamber, committees, and the corridors of the Assembly.</p>
+          </div>
+
+          <div className="footer-gallery-grid">
+            {GALLERY.map((item, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className="gallery-item"
+                onClick={() => openLightbox(idx)}
+                aria-label={`View photo: ${item.title}`}
+              >
+                <img src={item.url} alt={item.title} loading="lazy" />
+                <span className="gallery-tag">{item.tag}</span>
+                <span className="gallery-item-caption">
+                  <b>{item.title}</b>
+                  <span>{item.caption}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="public-footer-inner">
           <div>National Assembly Public Portal — an open record of legislative business.</div>
           <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -87,6 +151,46 @@ const Layout = () => {
           </div>
         </div>
       </footer>
+
+      {lightbox !== null && (
+        <div className="gallery-lightbox" onClick={() => setLightbox(null)}>
+          <button
+            type="button"
+            className="gallery-lightbox-close"
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+          <button
+            type="button"
+            className="gallery-lightbox-nav prev"
+            onClick={(e) => { e.stopPropagation(); stepLightbox(-1); }}
+            aria-label="Previous photo"
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          <figure className="gallery-lightbox-figure" onClick={(e) => e.stopPropagation()}>
+            <img src={GALLERY[lightbox].url} alt={GALLERY[lightbox].title} />
+            <figcaption>
+              <span className="gallery-tag">{GALLERY[lightbox].tag}</span>
+              <b>{GALLERY[lightbox].title}</b>
+              <span>{GALLERY[lightbox].caption}</span>
+              <em>{lightbox + 1} / {GALLERY.length}</em>
+            </figcaption>
+          </figure>
+
+          <button
+            type="button"
+            className="gallery-lightbox-nav next"
+            onClick={(e) => { e.stopPropagation(); stepLightbox(1); }}
+            aria-label="Next photo"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

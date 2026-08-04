@@ -54,6 +54,10 @@ const Layout = () => {
             <FileStack size={17} /> <span>Documents</span>
           </NavLink>
         </nav>
+
+        <div className="portal-sidebar-footer">
+          <PortalSwitcher variant="sidebar" collapsed={collapsed} />
+        </div>
       </aside>
 
       <div className="portal-main">
@@ -67,6 +71,7 @@ const Layout = () => {
             >
               <Menu size={16} />
             </button>
+            <h2 className="portal-topbar-title">{title}</h2>
             <div className="portal-topbar-session">
               <Landmark size={13} />
               {institution?.name}
@@ -75,7 +80,6 @@ const Layout = () => {
           <div className="portal-topbar-right">
             <LiveClock />
             <ThemeToggle />
-            <PortalSwitcher />
             <GovProfileMenu />
           </div>
         </header>

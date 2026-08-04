@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogOut, ChevronDown } from 'lucide-react';
 import { useApp } from '../../mock/store';
 import Avatar from './Avatar';
+import PortalMenu from './PortalMenu';
 
 const ProfileMenu = () => {
   const { currentUser, logout } = useApp();
@@ -35,6 +36,7 @@ const ProfileMenu = () => {
       </button>
       {open && (
         <div className="topbar-dropdown profile-dropdown">
+          <PortalMenu />
           <button type="button" onClick={handleLogout}>
             <LogOut size={15} /> Sign out
           </button>

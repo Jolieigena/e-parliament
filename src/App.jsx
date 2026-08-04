@@ -32,8 +32,8 @@ import PublicCommitteeDetail from './portals/public/pages/CommitteeDetail';
 import PublicMembers from './portals/public/pages/Members';
 import PublicSitting from './portals/public/pages/Sitting';
 import PublicLiveSitting from './portals/public/pages/LiveSitting';
-import PublicHowItWorks from './portals/public/pages/HowItWorks';
 import PublicPetitions from './portals/public/pages/Petitions';
+import PublicIdeas from './portals/public/pages/Ideas';
 import './index.css';
 
 function App() {
@@ -55,8 +55,8 @@ function App() {
             <Route path="members" element={<PublicMembers />} />
             <Route path="sitting" element={<PublicSitting />} />
             <Route path="sitting/live" element={<PublicLiveSitting />} />
-            <Route path="how-it-works" element={<PublicHowItWorks />} />
             <Route path="petitions" element={<PublicPetitions />} />
+            <Route path="ideas" element={<PublicIdeas />} />
           </Route>
           <Route path="/internal/signin" element={<InternalSignIn />} />
           <Route path="/internal" element={<InternalLayout />}>

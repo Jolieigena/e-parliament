@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Video, ShieldCheck, Clock, MapPin, Calendar, ArrowRight, Play } from 'lucide-react';
+import { ShieldCheck, Clock, MapPin, ArrowRight, Play } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 
 const SESSIONS_LIST = [
@@ -14,16 +14,6 @@ const Sitting = () => {
 
   return (
     <div>
-      {/* PAGE TITLE & SUBTITLE */}
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '6px', color: 'var(--text-strong)' }}>
-          Follow the Assembly in person or online
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '14px', maxWidth: '65ch', margin: 0 }}>
-          Every sitting is open to the public gallery, and every sitting is streamed live in HD. No prior booking required for the gallery, subject to seating capacity.
-        </p>
-      </div>
-
       {/* LIVE BROADCAST CARD */}
       <div className="public-card" style={{ padding: '24px', marginBottom: '28px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>

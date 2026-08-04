@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldQuestion, Send, Clock, CheckCircle2, CalendarClock, Inbox } from 'lucide-react';
+import { Send, Clock, CheckCircle2, CalendarClock, Inbox } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import Card from '../../../components/ui/Card';
 import Badge from '../../../components/ui/Badge';
@@ -57,9 +57,6 @@ const Oversight = () => {
 
   return (
     <div>
-      <h1 className="portal-page-title">
-        <span className="page-title-icon-wrap"><ShieldQuestion size={20} /></span> Oversight
-      </h1>
       <p className="portal-page-subtitle">Parliamentary oversight requests directed at your institution.</p>
 
       {myRequests.length > 0 ? (

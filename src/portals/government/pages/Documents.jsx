@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileStack, ArrowDownToLine, ArrowUpFromLine, Send, FileEdit, CheckCircle2, Inbox } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, Send, FileEdit, CheckCircle2, Inbox } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import Card from '../../../components/ui/Card';
 import Badge from '../../../components/ui/Badge';
@@ -23,9 +23,6 @@ const Documents = () => {
 
   return (
     <div>
-      <h1 className="portal-page-title">
-        <span className="page-title-icon-wrap"><FileStack size={20} /></span> Documents
-      </h1>
       <p className="portal-page-subtitle">Official correspondence exchanged between your institution and Parliament.</p>
 
       <Card className="dash-section">

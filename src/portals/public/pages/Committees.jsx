@@ -16,11 +16,6 @@ const Committees = () => {
 
   return (
     <div>
-      <h1 className="portal-page-title">
-        <span className="page-title-icon-wrap"><Gavel size={20} /></span> Committees
-      </h1>
-      <p className="portal-page-subtitle">Standing committees, their membership, and referred legislation.</p>
-
       <div className="committee-grid">
         {committees.map((committee) => {
           const roster = rosterOf(committee.name);

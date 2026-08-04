@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, UserRound, FileText, Video, Play, Volume2, PenTool } from 'lucide-react';
+import { ArrowRight, ShieldCheck, UserRound, FileText, Video, Play, Volume2, PenTool, Landmark, Vote, Users2 } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import Reveal from '../../../components/ui/Reveal';
 import CountUp from '../../../components/ui/CountUp';
@@ -14,6 +14,7 @@ const MP_HERO_PHOTOS = [
 const Home = () => {
   const { bills, session } = useApp();
 
+
   return (
     <div>
       {/* BALANCED 2-COLUMN LUXURY HERO SECTION */}
@@ -26,29 +27,42 @@ const Home = () => {
         <div className="editorial-hero-body">
           {/* LEFT EDITORIAL COPY */}
           <div>
-            <h1 className="editorial-title">
-              The Democratic Assembly
-            </h1>
-            <p className="editorial-lede">
-              Track bills in plain language, inspect representative voting records, watch live chamber hearings, and submit e-petitions on issues that matter to you.
-            </p>
+            <Reveal delay={0}>
+              <div className="editorial-eyebrow">E-Parliament &middot; Built for Governments</div>
+            </Reveal>
+            <Reveal delay={60}>
+              <h1 className="editorial-title">
+                The digital backbone of a modern Parliament.
+              </h1>
+            </Reveal>
+            <Reveal delay={160}>
+              <p className="editorial-lede">
+                One secure platform that gives governments total transparency and citizens a real voice &mdash; plain-language legislation, verifiable roll-call votes, live chamber sittings, and e-petitions with real impact.
+              </p>
+            </Reveal>
 
-            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <Link to="/public/bills" className="editorial-capsule-btn">
-                Explore Bills <ArrowRight size={14} />
-              </Link>
+            <Reveal delay={260}>
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <Link to="/public/bills" className="editorial-capsule-btn">
+                  Explore Bills <ArrowRight size={14} />
+                </Link>
 
-              <Link to="/public/members" className="editorial-capsule-btn" style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.3)' }}>
-                <UserRound size={14} /> Find your MP
-              </Link>
-            </div>
+                <Link to="/public/members" className="editorial-capsule-btn" style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.3)' }}>
+                  <UserRound size={14} /> Find your MP
+                </Link>
+              </div>
+            </Reveal>
           </div>
 
           {/* RIGHT LIVE BROADCAST CHAMBER CARD */}
+          <Reveal delay={360}>
           <div className="hero-live-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div className="live-badge">
-                <span className="pulse-dot" /> LIVE SITTING IN SESSION
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="live-badge">
+                  <span className="pulse-dot" /> LIVE SITTING IN SESSION
+                </div>
+                <span className="live-rec"><span className="rec-dot" /> REC</span>
               </div>
               <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Plenary Floor</span>
             </div>
@@ -72,6 +86,19 @@ const Home = () => {
               </div>
             </div>
 
+            <div className="live-progress-wrap">
+              <div className="live-progress-track">
+                <div className="live-progress-fill" />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.65)', fontWeight: 600, marginBottom: '10px' }}>
+              <span>Streaming live · HD 1080p</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span className="viewer-dot" /> 1,284 watching
+              </span>
+            </div>
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
               <div>
                 <div style={{ fontWeight: 700, color: '#fff' }}>Current Business: Digital Infrastructure Bill</div>
@@ -82,6 +109,7 @@ const Home = () => {
               </Link>
             </div>
           </div>
+          </Reveal>
         </div>
 
         {/* FROSTED GLASS STAT PILLS */}
@@ -165,6 +193,55 @@ const Home = () => {
           </div>
         </Link>
       </div>
+      </Reveal>
+
+      {/* FOR GOVERNMENTS */}
+      <Reveal delay={100}>
+      <section id="for-governments" className="gov-offer">
+        <div className="gov-offer-head">
+          <span className="gov-offer-eyebrow">For Governments</span>
+          <h2>Built for institutions that answer to the public.</h2>
+          <p>E-Parliament gives your assembly the transparency citizens expect and the workflows your staff need &mdash; in one secure platform.</p>
+        </div>
+
+        <div className="gov-offer-grid">
+          <div className="gov-offer-item">
+            <div className="gov-offer-icon"><Landmark size={20} /></div>
+            <div>
+              <h4>Open legislation records</h4>
+              <p>Plain-language bills, committee work, and full history published as a public record.</p>
+            </div>
+          </div>
+          <div className="gov-offer-item">
+            <div className="gov-offer-icon"><Vote size={20} /></div>
+            <div>
+              <h4>Verifiable roll-call votes</h4>
+              <p>Every vote recorded and auditable, so results stand up to scrutiny.</p>
+            </div>
+          </div>
+          <div className="gov-offer-item">
+            <div className="gov-offer-icon"><ShieldCheck size={20} /></div>
+            <div>
+              <h4>Secure oversight workflows</h4>
+              <p>Ministries and agencies respond to questions and submit legislation through a controlled channel.</p>
+            </div>
+          </div>
+          <div className="gov-offer-item">
+            <div className="gov-offer-icon"><Users2 size={20} /></div>
+            <div>
+              <h4>Citizen engagement, built in</h4>
+              <p>Live sittings, MP directories, and e-petitions turn public feedback into action.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="gov-offer-cta">
+          <Link to="/government/signin" className="btn btn-primary btn-lg">
+            Explore the Government Portal
+          </Link>
+          <Link to="/public" className="gov-offer-link">See the public experience &rarr;</Link>
+        </div>
+      </section>
       </Reveal>
 
       {/* TODAY AT THE ASSEMBLY */}

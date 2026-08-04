@@ -5,7 +5,6 @@ import {
   FileText,
   FileStack,
   ArrowRight,
-  Landmark,
   Clock,
   CheckCircle2,
   ArrowDownToLine,
@@ -32,9 +31,8 @@ const StatTile = ({ label, value, icon: Icon }) => (
 );
 
 const Dashboard = () => {
-  const { currentGovUser, institutions, bills, oversightRequests, committeeRequests, documents } = useApp();
+  const { currentGovUser, bills, oversightRequests, committeeRequests, documents } = useApp();
   const institutionId = currentGovUser.institutionId;
-  const institution = institutions.find((i) => i.id === institutionId);
 
   const myOversight = oversightRequests.filter((r) => r.institutionId === institutionId);
   const myCommitteeRequests = committeeRequests.filter((r) => r.institutionId === institutionId);
@@ -47,9 +45,6 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1 className="portal-page-title">
-        <span className="page-title-icon-wrap"><Landmark size={20} /></span> {institution?.name}
-      </h1>
       <p className="portal-page-subtitle">Track and respond to matters involving your institution.</p>
 
       <div className="stat-grid">

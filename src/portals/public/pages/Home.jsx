@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, UserRound, FileText, Video, Play, Volume2, PenTool } from 'lucide-react';
 import { useApp } from '../../../mock/store';
+import Reveal from '../../../components/ui/Reveal';
+import CountUp from '../../../components/ui/CountUp';
 
 const MP_HERO_PHOTOS = [
   'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80',
@@ -15,7 +17,8 @@ const Home = () => {
   return (
     <div>
       {/* BALANCED 2-COLUMN LUXURY HERO SECTION */}
-      <div className="editorial-hero-container">
+      <Reveal>
+        <div className="editorial-hero-container">
         <div className="editorial-hero-bg" />
         <div className="editorial-hero-overlay" />
 
@@ -103,7 +106,7 @@ const Home = () => {
               ))}
             </div>
             <div>
-              <div className="card-title">120 Members of Parliament</div>
+              <div className="card-title"><CountUp end={120} /> Members of Parliament</div>
               <div className="card-desc">Representing 12M+ Citizens across 5 Parliamentary Parties</div>
             </div>
           </div>
@@ -117,8 +120,10 @@ const Home = () => {
           </div>
         </div>
       </div>
+      </Reveal>
 
       {/* QUICK ACTION FEATURE HUB */}
+      <Reveal delay={100}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', margin: '36px 0' }}>
         <Link to="/public/bills" className="public-card" style={{ padding: '22px', textDecoration: 'none', display: 'flex', gap: '14px', alignItems: 'center', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--accent-tint)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -160,8 +165,10 @@ const Home = () => {
           </div>
         </Link>
       </div>
+      </Reveal>
 
       {/* TODAY AT THE ASSEMBLY */}
+      <Reveal delay={150}>
       <div style={{ margin: '44px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
           <div>
@@ -192,8 +199,10 @@ const Home = () => {
           </div>
         </div>
       </div>
+      </Reveal>
 
       {/* BILLS BEFORE PARLIAMENT */}
+      <Reveal delay={200}>
       <div style={{ margin: '44px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
           <div>
@@ -242,6 +251,7 @@ const Home = () => {
           })}
         </div>
       </div>
+      </Reveal>
     </div>
   );
 };

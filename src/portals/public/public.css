@@ -302,10 +302,10 @@ nav.public-main-nav a.active {
 
 .public-portal-root h1.editorial-title,
 .public-portal-root .editorial-title {
-  font-family: 'IBM Plex Serif', Georgia, serif !important;
-  font-size: 44px !important;
+  font-family: var(--font-serif) !important;
+  font-size: clamp(2.25rem, 5vw, 3.2rem) !important;
   font-weight: 600 !important;
-  line-height: 1.2 !important;
+  line-height: 1.15 !important;
   letter-spacing: -0.015em !important;
   color: #ffffff !important;
   margin-bottom: 16px !important;

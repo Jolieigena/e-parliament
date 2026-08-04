@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Brand — fresh system inspired by ClarityAI, in light mode: neutral
+     light chrome with a green accent reserved for primary actions
+     and active states, not a structural dark surface anywhere. */
+  --bg: #f9f9f9;
+  --surface: #ffffff;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-ink: #ffffff;
+  --accent-text: #3730a3;
+  --accent-tint: rgba(79, 70, 229, 0.12);
+  --accent-tint-soft: rgba(79, 70, 229, 0.07);
+  --overlay-tint: rgba(20, 22, 26, 0.05);
+
+  /* Glassmorphism — header widgets (search, toggle, bell, profile) */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 8px 24px rgba(20, 22, 26, 0.08);
+  --glass-blur: 16px;
+
+  /* Ambient glow — soft accent-tinted light bloom behind the page chrome,
+     plus the halo on the active nav pill. Subtle in light mode, pronounced
+     in dark (where the reference's glow actually reads). */
+  --glow-1: rgba(79, 70, 229, 0.05);
+  --glow-2: rgba(99, 102, 241, 0.045);
+  --nav-glow: 0 4px 14px -2px rgba(79, 70, 229, 0.35);
+
+  /* Text */
+  --text: #3f4451;
+  --text-strong: #14161a;
+  --text-muted: #6b7280;
+  --text-on-dark: #f5f6f4;
+  --text-on-dark-muted: rgba(245, 246, 244, 0.6);
+
+  /* Structure */
+  --border: #e4e4e7;
+  --border-on-dark: rgba(245, 246, 244, 0.12);
+
+  /* Status (always paired with icon + label, never color alone) */
+  --success: var(--accent);
+  --success-bg: var(--accent-tint-soft);
+  --warning: #d97706;
+  --warning-bg: #fdf3e6;
+  --error: #dc2626;
+  --error-bg: #fbeaea;
+
+  /* Radius — subtly rounded: cards/inputs get a soft, not sharp, corner.
+     Pill shape is reserved for functional controls (search, theme toggle,
+     segmented toggles) — nav links, buttons, and badges use --radius-sm. */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+
+  /* Shadow — soft and diffuse */
+  --shadow-sm: 0 1px 2px 0 rgba(20, 22, 26, 0.05);
+  --shadow-md: 0 6px 16px -4px rgba(20, 22, 26, 0.08);
+  --shadow-lg: 0 16px 32px -8px rgba(20, 22, 26, 0.12);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Sidebar — a fixed navy brand element, intentionally NOT redefined in
+     the dark theme block below, so it stays constant regardless of the
+     light/dark content toggle. */
+  --sidebar-bg: linear-gradient(180deg, #14213d 0%, #1c2d4d 100%);
+  --sidebar-text: #edebe3;
+  --sidebar-text-muted: #c9cfde;
+  --sidebar-text-faint: #7c8aa8;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+}
+
+/* Dark theme — toggled via the header's light/dark switch, sets
+   [data-theme] on <html>. Every surface/text/border color above is a
+   token, so this block is the entire dark reskin. */
+[data-theme='dark'] {
+  --bg: #14161a;
+  --surface: #1c1f26;
+  --text: #b6bcc7;
+  --text-strong: #f5f6f4;
+  --text-muted: #8b93a1;
+  --border: rgba(245, 246, 244, 0.1);
+  --accent-text: #818cf8;
+  --accent-tint: rgba(129, 140, 248, 0.16);
+  --accent-tint-soft: rgba(129, 140, 248, 0.12);
+  --overlay-tint: rgba(245, 246, 244, 0.08);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 16px -4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.5);
+
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-bg-strong: rgba(40, 44, 52, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  --glow-1: rgba(79, 70, 229, 0.22);
+  --glow-2: rgba(99, 102, 241, 0.16);
+  --nav-glow: 0 0 28px 3px rgba(79, 70, 229, 0.4), 0 4px 14px -2px rgba(79, 70, 229, 0.55);
+}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Share2,
@@ -41,6 +41,8 @@ const LiveSitting = () => {
   const [joinedIds, setJoinedIds] = useState(seedSpeakingQueue.map((s) => s.memberId));
   const [copied, setCopied] = useState(false);
 
+  if (!session.live) return <Navigate to="/internal/session" replace />;
+
   const memberOf = (id) => members.find((m) => m.id === id);
   const statusOf = (id) => seedSpeakingQueue.find((s) => s.memberId === id)?.status || 'Joined';
 
@@ -51,7 +53,7 @@ const LiveSitting = () => {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(`https://e-parliament.gov/internal/session/live/${session.id}`);
+      await navigator.clipboard.writeText(`https://e-parliament.gov/internal/session/live`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -232,7 +234,7 @@ const LiveSitting = () => {
                     type="button" 
                     className="btn" 
                     style={{ background: 'var(--success)', color: '#fff', padding: '1rem', fontSize: '1rem', fontWeight: 'bold', border: 'none' }}
-                    onClick={() => castVote(votingBill.id, [{ voterId: currentUser.id, choice: 'aye' }])}
+                    onClick={() => castVote(votingBill.id, 'aye')}
                   >
                     AYE
                   </button>
@@ -240,7 +242,7 @@ const LiveSitting = () => {
                     type="button" 
                     className="btn" 
                     style={{ background: 'var(--error)', color: '#fff', padding: '1rem', fontSize: '1rem', fontWeight: 'bold', border: 'none' }}
-                    onClick={() => castVote(votingBill.id, [{ voterId: currentUser.id, choice: 'nay' }])}
+                    onClick={() => castVote(votingBill.id, 'nay')}
                   >
                     NAY
                   </button>
@@ -248,7 +250,7 @@ const LiveSitting = () => {
                     type="button" 
                     className="btn" 
                     style={{ background: 'var(--text-muted)', color: '#fff', padding: '1rem', fontSize: '1rem', fontWeight: 'bold', border: 'none' }}
-                    onClick={() => castVote(votingBill.id, [{ voterId: currentUser.id, choice: 'abstain' }])}
+                    onClick={() => castVote(votingBill.id, 'abstain')}
                   >
                     ABSTAIN
                   </button>

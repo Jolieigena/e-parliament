@@ -3,22 +3,11 @@ import { Mail, Check, X, Send } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { PARTIES } from '../../../mock/entities';
 
-const PARTY_COLORS = {
-  'Conservative Union': '#8C3B3B',
-  'Progressive Alliance': '#3B6E8F',
-  'Green Coalition': '#4C7A3A',
-  'Liberal Democrats': '#B8862E',
-  'Independent': '#64748B',
+const SHORT_LABELS = {
+  'Progressive Alliance': 'Progressive',
+  'National Unity Party': 'National Unity',
+  'Reform Alliance': 'Reform',
 };
-
-const PARTY_CHIPS = [
-  { id: 'All parties', label: 'All MPs', count: 120, color: 'var(--accent)' },
-  { id: 'Progressive Alliance', label: 'Progressive', count: 38, color: '#3B6E8F' },
-  { id: 'Conservative Union', label: 'Conservative', count: 34, color: '#8C3B3B' },
-  { id: 'Green Coalition', label: 'Green', count: 18, color: '#4C7A3A' },
-  { id: 'Liberal Democrats', label: 'Liberal Dem.', count: 16, color: '#B8862E' },
-  { id: 'Independent', label: 'Independent', count: 14, color: '#64748B' },
-];
 
 const MP_PHOTOS = [
   'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80',
@@ -50,6 +39,23 @@ const Members = () => {
   const [sentSuccess, setSentSuccess] = useState(false);
 
   const mps = members.filter((m) => m.roles.includes('MP'));
+
+  const partyCounts = mps.reduce((acc, m) => {
+    const name = PARTIES.find((p) => p.id === m.party)?.name || 'Independent';
+    acc[name] = (acc[name] || 0) + 1;
+    return acc;
+  }, {});
+
+  const PARTY_CHIPS = [
+    { id: 'All parties', label: 'All MPs', count: mps.length, color: 'var(--accent)' },
+    ...PARTIES.map((p) => ({
+      id: p.name,
+      label: SHORT_LABELS[p.name] || p.name,
+      count: partyCounts[p.name] || 0,
+      color: p.color,
+    })),
+    { id: 'Independent', label: 'Independent', count: partyCounts['Independent'] || 0, color: '#64748B' },
+  ];
 
   const filteredMps = mps.filter((m) => {
     const pName = PARTIES.find((p) => p.id === m.party)?.name || 'Independent';
@@ -93,7 +99,7 @@ const Members = () => {
         {filteredMps.map((mp, idx) => {
           const partyObj = PARTIES.find((p) => p.id === mp.party);
           const pName = partyObj?.name || 'Independent';
-          const pColor = PARTY_COLORS[pName] || '#64748B';
+          const pColor = partyObj?.color || '#64748B';
           const photo = getMpPhoto(mp, idx);
           const loyaltyPct = (92 + (idx % 7) * 1.1).toFixed(1);
           const attendancePct = (91 + (idx % 8) * 1.0).toFixed(1);
@@ -204,7 +210,7 @@ const Members = () => {
                     height: '56px',
                     borderRadius: '50%',
                     objectFit: 'cover',
-                    border: `2px solid ${PARTY_COLORS[PARTIES.find((p) => p.id === activeMp.party)?.name] || 'var(--accent)'}`,
+                    border: `2px solid ${PARTIES.find((p) => p.id === activeMp.party)?.color || 'var(--accent)'}`,
                   }}
                 />
                 <div>
@@ -231,7 +237,7 @@ const Members = () => {
                 </div>
               </div>
               <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                Recent Stances: Voted <strong>AYE</strong> on Digital Infrastructure Bill &middot; Voted <strong>AYE</strong> on Public Health Funding.
+                Recent Stances: Voted <strong>AYE</strong> on Infrastructure Budget 2026 &middot; Voted <strong>AYE</strong> on Energy Act 2026.
               </div>
             </div>
 
@@ -243,7 +249,7 @@ const Members = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Question regarding Digital Infrastructure Bill…"
+                  placeholder="e.g. Question regarding Infrastructure Budget 2026…"
                   value={subjectText}
                   onChange={(e) => setSubjectText(e.target.value)}
                   style={{

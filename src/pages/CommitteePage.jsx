@@ -48,7 +48,7 @@ const CommitteePage = () => {
   const nextScheduled = committee.meetings.find((m) => m.status === 'Scheduled');
 
   const myEntry = currentUser.committees.find((c) => c.name === committee.name);
-  const canLogMinutes = nextScheduled && (myEntry?.role === 'Chair' || currentUser.roles[0] === 'Clerk');
+  const canLogMinutes = nextScheduled && (myEntry?.role === 'Chair' || currentUser.roles[0] === 'Clerk' || currentUser.roles[0] === 'Superuser');
 
   const handleLogMinutes = (e) => {
     e.preventDefault();

@@ -26,6 +26,39 @@ const TYPE_META = {
   'Order Paper': { icon: FileText, color: '#F59E0B', label: 'Order Paper' },
 };
 
+function buildDocHtml(doc) {
+  const sections = doc.sections
+    .map((s) => `<h3>${s.number} &mdash; ${s.title}</h3><p>${s.content}</p>`)
+    .join('');
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>${doc.title}</title>
+<style>
+  body{font-family:Georgia,serif;max-width:720px;margin:40px auto;color:#1e293b;line-height:1.65;padding:0 24px;}
+  .head{text-align:center;margin-bottom:28px;}
+  .head .org{font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;}
+  h1{font-size:22px;text-align:center;margin:6px 0 0;}
+  .ref{text-align:center;color:#64748b;font-size:14px;margin:10px 0 0;}
+  h3{font-size:16px;margin:20px 0 6px;}
+  p{margin:0 0 14px;}
+  .rule{border:none;border-top:1px solid #cbd5e1;margin:28px 0;}
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="org">National Assembly Printing Office</div>
+    <h1>${doc.title}</h1>
+    <div class="ref">${doc.referenceNumber} &middot; ${doc.documentType} &middot; Published ${doc.publishDate}</div>
+  </div>
+  <hr class="rule">
+  <p>${doc.summary}</p>
+  ${sections}
+</body>
+</html>`;
+}
+
 const OfficialDocuments = () => {
   const [selectedType, setSelectedType] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,7 +80,15 @@ const OfficialDocuments = () => {
   });
 
   const handleDownload = (doc) => {
-    alert(`Downloading official PDF for "${doc.title}" (${doc.referenceNumber})...`);
+    const blob = new Blob([buildDocHtml(doc)], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${doc.referenceNumber.replace(/[^A-Za-z0-9]+/g, '-')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -184,9 +225,9 @@ const OfficialDocuments = () => {
                   className="btn btn-primary btn-sm"
                   style={{ justifyContent: 'center' }}
                   onClick={() => handleDownload(doc)}
-                  title="Download PDF"
+                  title="Download document"
                 >
-                  <Download size={14} /> PDF
+                  <Download size={14} /> Document
                 </button>
               </div>
             </Card>
@@ -246,7 +287,7 @@ const OfficialDocuments = () => {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => handleDownload(previewDoc)}>
-                  <Download size={14} /> Download Official PDF
+                  <Download size={14} /> Download document
                 </button>
                 <button
                   type="button"

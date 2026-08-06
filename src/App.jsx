@@ -15,6 +15,7 @@ import Users from './pages/Users';
 import VotingRecords from './pages/VotingRecords';
 import Reports from './pages/Reports';
 import OfficialDocuments from './pages/OfficialDocuments';
+import Petitions from './pages/Petitions';
 import GovernmentSignIn from './portals/government/SignIn';
 import GovernmentLayout from './portals/government/Layout';
 import GovDashboard from './portals/government/pages/Dashboard';
@@ -45,7 +46,7 @@ function App() {
     <AppProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/internal/signin" replace />} />
+          <Route path="/" element={<Navigate to="/public" replace />} />
           <Route path="/public" element={<PublicLayout />}>
             <Route index element={<PublicHome />} />
             <Route path="bills" element={<PublicBills />} />
@@ -69,6 +70,7 @@ function App() {
             <Route path="committees/:committeeId" element={<CommitteePage />} />
             <Route path="users" element={<Users />} />
             <Route path="official-documents" element={<OfficialDocuments />} />
+            <Route path="petitions" element={<Petitions />} />
             <Route path="voting-records" element={<VotingRecords />} />
             <Route path="reports" element={<Reports />} />
           </Route>

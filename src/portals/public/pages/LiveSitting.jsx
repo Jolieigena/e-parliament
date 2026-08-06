@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Check, Sparkles, MessageSquare, Users2 } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { seedTranscript, seedSpeakingQueue } from '../../../mock/entities';
@@ -20,6 +20,8 @@ const LiveSitting = () => {
 
   const [tab, setTab] = useState('speakers');
   const [copied, setCopied] = useState(false);
+
+  if (!session.live) return <Navigate to="/public/sitting" replace />;
 
   const memberOf = (id) => members.find((m) => m.id === id);
   const statusOf = (id) => seedSpeakingQueue.find((s) => s.memberId === id)?.status;

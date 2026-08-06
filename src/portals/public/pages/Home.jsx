@@ -11,6 +11,26 @@ const MP_HERO_PHOTOS = [
   'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=256&q=80',
 ];
 
+const AGENDA = [
+  {
+    tag: 'Second reading',
+    title: 'Infrastructure Budget 2026',
+    desc: 'Debate on funding high-speed rural broadband for unconnected municipalities.',
+    billId: 'bill-infra',
+  },
+  {
+    tag: 'Question time',
+    title: 'Ministerial Oral Answers',
+    desc: 'Public questioning session directed at the Minister of Finance regarding budget forecasts.',
+  },
+  {
+    tag: 'Third reading',
+    title: 'Public Sector Pension Reform Bill',
+    desc: 'Final floor vote on the contributory pension reform and its transition cost.',
+    billId: 'bill-pension',
+  },
+];
+
 const Home = () => {
   const { bills, session } = useApp();
 
@@ -101,7 +121,7 @@ const Home = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
               <div>
-                <div style={{ fontWeight: 700, color: '#fff' }}>Current Business: Digital Infrastructure Bill</div>
+                <div style={{ fontWeight: 700, color: '#fff' }}>Current Business: Infrastructure Budget 2026</div>
                 <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', marginTop: '2px' }}>Hon. S. Kamau (Speaker presiding)</div>
               </div>
               <Link to="/public/sitting/live" className="btn btn-primary btn-sm" style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '11.5px' }}>
@@ -257,23 +277,29 @@ const Home = () => {
         </div>
 
         <div className="agenda-grid">
-          <div className="public-card agenda-card">
-            <span className="tag">Second reading</span>
-            <h4>Digital Infrastructure Bill</h4>
-            <p>Debate on funding high-speed rural broadband for unconnected municipalities.</p>
-          </div>
-
-          <div className="public-card agenda-card">
-            <span className="tag">Question time</span>
-            <h4>Ministerial Oral Answers</h4>
-            <p>Public questioning session directed at the Minister of Finance regarding budget forecasts.</p>
-          </div>
-
-          <div className="public-card agenda-card">
-            <span className="tag">Third reading</span>
-            <h4>Public Health Funding Amendment</h4>
-            <p>Final floor vote on expanding mental health funding and community clinic staffing.</p>
-          </div>
+          {AGENDA.map((a) => {
+            const card = (
+              <>
+                <span className="tag">{a.tag}</span>
+                <h4>{a.title}</h4>
+                <p>{a.desc}</p>
+              </>
+            );
+            return a.billId ? (
+              <Link
+                key={a.title}
+                to={`/public/bills/${a.billId}`}
+                className="public-card agenda-card"
+                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}
+              >
+                {card}
+              </Link>
+            ) : (
+              <div key={a.title} className="public-card agenda-card">
+                {card}
+              </div>
+            );
+          })}
         </div>
       </div>
       </Reveal>

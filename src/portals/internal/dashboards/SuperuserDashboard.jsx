@@ -1,34 +1,44 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Inbox, Vote, CalendarDays, Users2, Radio } from 'lucide-react';
+import { FileText, Users2, Vote, BadgeCheck, ArrowRight, Inbox, Megaphone, Radio, CalendarDays, Gavel } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { seedUpcomingSittings } from '../../../mock/entities';
 import Card from '../../../components/ui/Card';
 import BillRow from '../../../components/ui/BillRow';
+import Hemicycle from '../../../components/ui/Hemicycle';
+import VoteBar from '../../../components/ui/VoteBar';
 
-const nextScheduledMeeting = (committee) =>
-  committee.meetings
-    .filter((m) => m.status === 'Scheduled')
-    .sort((a, b) => a.date.localeCompare(b.date))[0];
+const StatTile = ({ label, value, icon: Icon }) => (
+  <Card className="stat-tile">
+    <div className="stat-tile-icon">
+      <Icon size={18} />
+    </div>
+    <div>
+      <div className="stat-tile-value">{value}</div>
+      <div className="stat-tile-label">{label}</div>
+    </div>
+  </Card>
+);
 
-const chairOf = (committee, members) =>
-  members.find((m) => m.committees.some((c) => c.name === committee.name && c.role === 'Chair'));
+const SuperuserDashboard = () => {
+  const { currentUser, bills, session, members, petitions } = useApp();
 
-const MPDashboard = () => {
-  const { currentUser, bills, session, members, committees } = useApp();
+  const counts = {
+    total: bills.length,
+    committee: bills.filter((b) => b.stage === 'Committee Review').length,
+    active: bills.filter((b) => ['Debate', 'Voting'].includes(b.stage)).length,
+    enacted: bills.filter((b) => b.stage === 'Enacted').length,
+  };
 
-  const myBills = bills.filter((b) => b.sponsorId === currentUser.id);
+  const mps = members.filter((m) => m.roles.includes('MP'));
+
   const onFloorToday = session.orderPaper
     .map((item) => bills.find((b) => b.id === item.billId))
     .filter(Boolean);
 
   const votingBill = bills.find((b) => b.stage === 'Voting');
-  const needsMyVote = session.live && votingBill && !votingBill.voters[currentUser.id];
 
-  const committeeActivity = committees
-    .map((c) => ({ committee: c, next: nextScheduledMeeting(c), chair: chairOf(c, members) }))
-    .filter((c) => c.next)
-    .sort((a, b) => a.next.date.localeCompare(b.next.date))
-    .slice(0, 4);
+  const awaitingVerification = bills.filter((b) => b.stage === 'Draft');
+  const petitionsToValidate = petitions.filter((p) => p.status === 'Submitted');
 
   return (
     <div>
@@ -39,26 +49,29 @@ const MPDashboard = () => {
           {session.name} {session.live ? '· Live' : '· Adjourned'}
         </div>
       </div>
-      <p className="portal-page-subtitle">Action Inbox & Agenda</p>
+      <p className="portal-page-subtitle">Full Assembly Overview — MP, Chamber & Secretariat</p>
 
-      {/* ACTION INBOX */}
-      {needsMyVote && (
+      <div className="stat-grid">
+        <StatTile label="Total bills" value={counts.total} icon={FileText} />
+        <StatTile label="In committee" value={counts.committee} icon={Users2} />
+        <StatTile label="On the floor" value={counts.active} icon={Vote} />
+        <StatTile label="Enacted" value={counts.enacted} icon={BadgeCheck} />
+      </div>
+
+      {session.live && votingBill && (
         <Card className="dash-section" style={{ borderLeft: '4px solid var(--error)', backgroundColor: 'var(--error-bg)' }}>
-          <div className="dash-section-header" style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
-            <h2 style={{ color: 'var(--error)' }}><Vote size={18} style={{ display: 'inline', verticalAlign: '-3px', marginRight: '0.5rem' }}/> Action Required: Live Vote</h2>
+          <div className="dash-section-header" style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: '0.5rem' }}>
+            <h2 style={{ color: 'var(--error)' }}><Vote size={18} style={{ display: 'inline', verticalAlign: '-3px', marginRight: '0.5rem' }}/> Live Division: {votingBill.title}</h2>
+            <Link to="/internal/session/live" className="btn btn-primary btn-sm" style={{ backgroundColor: 'var(--error)', borderColor: 'var(--error)', textDecoration: 'none' }}>
+              Join sitting
+            </Link>
           </div>
-          <p className="dash-footnote" style={{ marginTop: '0.5rem', color: 'var(--text-strong)' }}>
-            <strong>{votingBill.title}</strong> is currently on the floor for a vote.
-          </p>
-          <Link to="/internal/session/live" className="btn btn-primary btn-sm" style={{ marginTop: '1rem', backgroundColor: 'var(--error)', borderColor: 'var(--error)' }}>
-            Join sitting to vote
-          </Link>
+          <VoteBar votes={votingBill.votes} />
         </Card>
       )}
 
       <div className="dash-overview-grid" style={{ marginTop: '2rem' }}>
         <div>
-          {/* CHRONOLOGICAL ORDER PAPER */}
           <Card className="dash-section">
             <div className="dash-section-header">
               <h2>{session.live ? "Today's Order Paper" : 'Next sitting — order of business'}</h2>
@@ -66,13 +79,11 @@ const MPDashboard = () => {
                 {session.live ? 'Join sitting' : 'View sitting'} <ArrowRight size={14} />
               </Link>
             </div>
-
             {!session.live && (
               <p className="dash-footnote">
                 {session.name} is adjourned. {session.date && <>Next sitting scheduled for {new Date(session.date).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}.</>}
               </p>
             )}
-
             <ul className="timeline">
               {onFloorToday.map((bill, index) => (
                 <li key={bill.id}>
@@ -90,48 +101,57 @@ const MPDashboard = () => {
             </ul>
           </Card>
 
-          {/* MY BILLS */}
           <Card className="dash-section">
             <div className="dash-section-header">
-              <h2>Tracked Legislation</h2>
+              <h2>Awaiting verification</h2>
               <Link to="/internal/bills" className="dash-section-link">
                 All bills <ArrowRight size={14} />
               </Link>
             </div>
-            <ul className="dash-list">
-              {myBills.map((bill) => (
-                <li key={bill.id}><BillRow bill={bill} /></li>
-              ))}
-            </ul>
+            {awaitingVerification.length === 0 ? (
+              <p className="dash-empty-state"><Inbox size={15} /> No bills currently awaiting verification.</p>
+            ) : (
+              <ul className="dash-list">
+                {awaitingVerification.map((bill) => (
+                  <li key={bill.id}><BillRow bill={bill} /></li>
+                ))}
+              </ul>
+            )}
           </Card>
         </div>
 
         <div>
-          {/* COMMITTEES */}
           <Card className="dash-section">
             <div className="dash-section-header">
-              <h2>Committee schedule</h2>
+              <h2>Chamber composition</h2>
             </div>
-            {committeeActivity.length > 0 ? (
+            <Hemicycle members={mps} />
+          </Card>
+
+          <Card className="dash-section">
+            <div className="dash-section-header">
+              <h2>Petitions to validate</h2>
+              <Link to="/internal/petitions" className="dash-section-link">
+                Manage <ArrowRight size={14} />
+              </Link>
+            </div>
+            {petitionsToValidate.length === 0 ? (
+              <p className="dash-empty-state"><Megaphone size={15} /> No petitions awaiting validation.</p>
+            ) : (
               <ul className="agenda-list">
-                {committeeActivity.map(({ committee, next, chair }) => (
-                  <li key={committee.id} className="agenda-row">
+                {petitionsToValidate.slice(0, 4).map((p) => (
+                  <li key={p.id} className="agenda-row">
                     <span className="row-title-with-icon">
-                      <Users2 size={14} />
-                      <span>{committee.name}</span>
+                      <Megaphone size={14} />
+                      <span>{p.title}</span>
                     </span>
-                    <span className="committee-activity-meta">
-                      {next.date}
-                    </span>
+                    <span className="committee-activity-meta">Submitted</span>
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="dash-empty-state"><Inbox size={15} /> No committee meetings currently scheduled.</p>
             )}
           </Card>
 
-          {/* UPCOMING SITTINGS */}
           <Card className="dash-section">
             <div className="dash-section-header">
               <h2>Upcoming sittings</h2>
@@ -150,8 +170,20 @@ const MPDashboard = () => {
           </Card>
         </div>
       </div>
+
+      {session.live && votingBill && !mps.every((m) => votingBill.voters[m.id]) && (
+        <Card className="dash-section">
+          <div className="dash-section-header">
+            <h2><Gavel size={16} style={{ display: 'inline', verticalAlign: '-3px', marginRight: '0.5rem' }}/> Chamber tally</h2>
+            <Link to={`/internal/bills/${votingBill.id}`} className="dash-section-link">
+              Open bill <ArrowRight size={14} />
+            </Link>
+          </div>
+          <VoteBar votes={votingBill.votes} />
+        </Card>
+      )}
     </div>
   );
 };
 
-export default MPDashboard;
+export default SuperuserDashboard;

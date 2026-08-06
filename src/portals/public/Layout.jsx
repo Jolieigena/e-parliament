@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
-import { LogIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LogIn, X, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
 import BrandMark from '../../components/ui/BrandMark';
 import ThemeToggle from '../../components/ui/ThemeToggle';
 import GlobalSearch from '../../components/ui/GlobalSearch';
@@ -46,6 +46,7 @@ const GALLERY = [
 ];
 
 const Layout = () => {
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
 
   const openLightbox = (id) => setLightbox(id);
@@ -110,38 +111,16 @@ const Layout = () => {
 
       {/* SITE FOOTER */}
       <footer className="public-site-footer">
-        <div className="footer-gallery">
-          <div className="footer-gallery-head">
-            <div>
-              <span className="gov-offer-eyebrow">Media</span>
-              <h3>Parliament in pictures</h3>
-            </div>
-            <p>Moments from the Chamber, committees, and the corridors of the Assembly.</p>
-          </div>
-
-          <div className="footer-gallery-grid">
-            {GALLERY.map((item, idx) => (
-              <button
-                key={idx}
-                type="button"
-                className="gallery-item"
-                onClick={() => openLightbox(idx)}
-                aria-label={`View photo: ${item.title}`}
-              >
-                <img src={item.url} alt={item.title} loading="lazy" />
-                <span className="gallery-tag">{item.tag}</span>
-                <span className="gallery-item-caption">
-                  <b>{item.title}</b>
-                  <span>{item.caption}</span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div className="public-footer-inner">
           <div>National Assembly Public Portal — an open record of legislative business.</div>
           <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="footer-gallery-btn"
+              onClick={() => setGalleryOpen(true)}
+            >
+              <Camera size={13} /> Gallery
+            </button>
             <a href="#" onClick={(e) => e.preventDefault()}>Accessibility</a>
             <a href="#" onClick={(e) => e.preventDefault()}>Open data</a>
             <a href="#" onClick={(e) => e.preventDefault()}>Contact the Clerk's office</a>
@@ -151,6 +130,46 @@ const Layout = () => {
           </div>
         </div>
       </footer>
+
+      {galleryOpen && (
+        <div className="gallery-modal" onClick={() => setGalleryOpen(false)}>
+          <button
+            type="button"
+            className="gallery-lightbox-close"
+            onClick={() => setGalleryOpen(false)}
+            aria-label="Close gallery"
+          >
+            <X size={20} />
+          </button>
+          <div className="gallery-modal-inner" onClick={(e) => e.stopPropagation()}>
+            <div className="footer-gallery-head">
+              <div>
+                <span className="gov-offer-eyebrow">Media</span>
+                <h3>Parliament in pictures</h3>
+              </div>
+              <p>Moments from the Chamber, committees, and the corridors of the Assembly.</p>
+            </div>
+            <div className="gallery-modal-grid">
+              {GALLERY.map((item, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="gallery-item"
+                  onClick={() => openLightbox(idx)}
+                  aria-label={`View photo: ${item.title}`}
+                >
+                  <img src={item.url} alt={item.title} loading="lazy" />
+                  <span className="gallery-tag">{item.tag}</span>
+                  <span className="gallery-item-caption">
+                    <b>{item.title}</b>
+                    <span>{item.caption}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {lightbox !== null && (
         <div className="gallery-lightbox" onClick={() => setLightbox(null)}>

@@ -1,6 +1,7 @@
 export const STAGES = ['Draft', 'Introduced', 'Committee Review', 'Debate', 'Voting', 'Assent', 'Enacted'];
 export const TERMINAL_EXITS = ['Withdrawn', 'Rejected'];
-export const ROLES = ['MP', 'Speaker', 'Clerk', 'Administrator'];
+export const ROLES = ['MP', 'Speaker', 'Clerk', 'Administrator', 'Superuser'];
+export const IDEA_PETITION_THRESHOLD = 100;
 
 export const PARTIES = [
   { id: 'party-progressive', name: 'Progressive Alliance', color: '#3B6E8F' },
@@ -69,6 +70,14 @@ export const seedMembers = [
     id: 'm-bahati',
     name: 'Mr. D. Bahati',
     roles: ['Administrator'],
+    party: null,
+    constituency: null,
+    committees: [],
+  },
+  {
+    id: 'm-super',
+    name: 'Mr. K. Odhiambo',
+    roles: ['Superuser'],
     party: null,
     constituency: null,
     committees: [],
@@ -409,6 +418,7 @@ export const seedBills = [
 ];
 
 export const seedAccounts = [
+  { email: 'superuser@parliament.gov', memberId: 'm-super' },
   { email: 'mensah@parliament.gov', memberId: 'm-mensah' },
   { email: 'okafor@parliament.gov', memberId: 'm-okafor' },
   { email: 'adeyemi@parliament.gov', memberId: 'm-adeyemi' },
@@ -549,6 +559,7 @@ export const seedCommittees = [
 export const seedSession = {
   id: 'sitting-104',
   name: 'Sitting 104',
+  date: '2026-08-05',
   live: true,
   orderPaper: [
     { billId: 'bill-infra', item: 'Second Reading Debate & Vote' },

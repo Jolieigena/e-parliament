@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Clock, CheckCircle2, XCircle, FilePenLine, History, FileText } from 'lucide-react';
 import { useApp } from '../../../mock/store';
@@ -9,6 +10,7 @@ import StageBadge from '../../../components/ui/StageBadge';
 import VoteBar from '../../../components/ui/VoteBar';
 import Lifecycle from '../../../components/ui/Lifecycle';
 import Hemicycle from '../../../components/ui/Hemicycle';
+import BillDocumentModal from '../../../components/ui/BillDocumentModal';
 
 const AMENDMENT_STATUS_ICONS = {
   Pending: Clock,
@@ -19,6 +21,7 @@ const AMENDMENT_STATUS_ICONS = {
 const BillDetail = () => {
   const { billId } = useParams();
   const { bills, members, institutions } = useApp();
+  const [showDoc, setShowDoc] = useState(false);
 
   const bill = bills.find((b) => b.id === billId);
   if (!bill) return <Navigate to="/public/bills" replace />;
@@ -54,7 +57,7 @@ const BillDetail = () => {
       <Card className="dash-section">
         <div className="dash-section-header">
           <h2 style={{ marginBottom: 0 }}>Summary</h2>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => alert('Full document viewer not implemented in prototype.')}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowDoc(true)}>
             <FileText size={14} /> View full document
           </button>
         </div>
@@ -105,6 +108,8 @@ const BillDetail = () => {
           })}
         </ul>
       </Card>
+
+      {showDoc && <BillDocumentModal bill={bill} onClose={() => setShowDoc(false)} />}
     </div>
   );
 };

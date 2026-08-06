@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, XCircle, MinusCircle, Clock, FilePenLine, Gavel, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, MinusCircle, Clock, FilePenLine, Gavel, X, FileText } from 'lucide-react';
 import { useApp } from '../mock/store';
 import { STAGE_META } from '../mock/stageMeta';
 import { categoryIcon } from '../mock/categoryMeta';
@@ -11,6 +11,7 @@ import StageBadge from '../components/ui/StageBadge';
 import VoteBar from '../components/ui/VoteBar';
 import Lifecycle from '../components/ui/Lifecycle';
 import Hemicycle from '../components/ui/Hemicycle';
+import BillDocumentModal from '../components/ui/BillDocumentModal';
 
 const COMMITTEES = ['Judiciary Committee', 'Health Committee', 'Finance Committee', 'Education Committee'];
 
@@ -35,6 +36,7 @@ const BillPage = () => {
   const [amOriginal, setAmOriginal] = useState('');
   const [amProposed, setAmProposed] = useState('');
   const [amSuccess, setAmSuccess] = useState('');
+  const [showDoc, setShowDoc] = useState(false);
 
   const handleProposeSubmit = (e) => {
     e.preventDefault();
@@ -57,6 +59,7 @@ const BillPage = () => {
   const sponsor = isGovBill ? null : members.find((m) => m.id === bill.sponsorId);
   const sponsoringInstitution = isGovBill ? institutions.find((i) => i.id === bill.institutionId) : null;
   const role = currentUser.roles[0];
+  const isSuper = role === 'Superuser';
   const isSponsor = currentUser.id === bill.sponsorId;
   const myVote = bill.voters[currentUser.id];
   const meta = STAGE_META[bill.stage];
@@ -99,6 +102,7 @@ const BillPage = () => {
   const canWithdraw = isSponsor && ['Draft', 'Introduced', 'Committee Review', 'Debate'].includes(bill.stage);
   const isTerminalStage = ['Enacted', 'Rejected', 'Withdrawn'].includes(bill.stage);
   const hasStageAction =
+    role === 'Superuser' ||
     (bill.stage === 'Draft' && role === 'Clerk') ||
     (bill.stage === 'Introduced' && (role === 'Clerk' || role === 'Speaker')) ||
     (bill.stage === 'Committee Review' && (role === 'Speaker' || role === 'Clerk')) ||
@@ -134,7 +138,7 @@ const BillPage = () => {
       <Card className="dash-section">
         <div className="dash-section-header">
           <h2 style={{ marginBottom: 0 }}>Summary</h2>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => alert('Full document viewer not implemented in prototype.')}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowDoc(true)}>
             <FileText size={14} /> View full document
           </button>
         </div>
@@ -144,13 +148,13 @@ const BillPage = () => {
       <Card className="dash-section">
         <h2 style={{ marginBottom: '1rem' }}>Take action</h2>
 
-        {bill.stage === 'Draft' && role === 'Clerk' && (
+        {bill.stage === 'Draft' && (role === 'Clerk' || isSuper) && (
           <button type="button" className="btn btn-primary btn-md" onClick={() => advanceStage(bill.id, 'Introduced', 'Verified and admitted for first reading.')}>
             Verify &amp; introduce
           </button>
         )}
 
-        {bill.stage === 'Introduced' && (role === 'Clerk' || role === 'Speaker') && (
+        {bill.stage === 'Introduced' && (role === 'Clerk' || role === 'Speaker' || isSuper) && (
           <div className="committee-referral">
             <select className="form-input" value={committeeChoice} onChange={(e) => setCommitteeChoice(e.target.value)}>
               {COMMITTEES.map((c) => (
@@ -163,19 +167,19 @@ const BillPage = () => {
           </div>
         )}
 
-        {bill.stage === 'Committee Review' && (role === 'Speaker' || role === 'Clerk') && (
+        {bill.stage === 'Committee Review' && (role === 'Speaker' || role === 'Clerk' || isSuper) && (
           <button type="button" className="btn btn-primary btn-md" onClick={() => advanceStage(bill.id, 'Debate', 'Committee review concluded; scheduled for second reading debate.')}>
             Advance to debate
           </button>
         )}
 
-        {bill.stage === 'Debate' && role === 'Speaker' && (
+        {bill.stage === 'Debate' && (role === 'Speaker' || isSuper) && (
           <button type="button" className="btn btn-primary btn-md" onClick={() => advanceStage(bill.id, 'Voting', 'Floor debate concluded; vote opened.')}>
             Open floor vote
           </button>
         )}
 
-        {bill.stage === 'Voting' && role === 'MP' && !myVote && (
+        {bill.stage === 'Voting' && (role === 'MP' || isSuper) && !myVote && (
           <div className="vote-actions">
             <button type="button" className="vote-btn vote-btn-aye" onClick={() => castVote(bill.id, 'aye')}>
               <CheckCircle2 size={17} /> Aye
@@ -188,7 +192,7 @@ const BillPage = () => {
             </button>
           </div>
         )}
-        {bill.stage === 'Voting' && role === 'MP' && myVote && (
+        {bill.stage === 'Voting' && (role === 'MP' || isSuper) && myVote && (
           <p className="dash-footnote">You voted <strong>{myVote}</strong> on this bill.</p>
         )}
       {(bill.stage === 'Voting' || (bill.votes && (bill.votes.aye + bill.votes.nay + bill.votes.abstain > 0))) && (
@@ -205,12 +209,12 @@ const BillPage = () => {
           </div>
         </Card>
       )}
-        {bill.stage === 'Voting' && role === 'Speaker' && !allVoted && (
+        {bill.stage === 'Voting' && (role === 'Speaker' || isSuper) && !allVoted && (
           <button type="button" className="btn btn-secondary btn-sm" onClick={handleCallDivision} disabled={divisionRunning} style={{ marginBottom: '1rem' }}>
             <Gavel size={15} /> {divisionRunning ? 'Division in progress…' : 'Call a division'}
           </button>
         )}
-        {bill.stage === 'Voting' && role === 'Speaker' && (
+        {bill.stage === 'Voting' && (role === 'Speaker' || isSuper) && (
           <div className="vote-actions" style={{ marginTop: '1rem' }}>
             <button type="button" className="btn btn-primary btn-sm" onClick={() => advanceStage(bill.id, 'Assent', 'Passed third reading; sent for assent.')}>
               Conclude vote &amp; send for assent
@@ -221,7 +225,7 @@ const BillPage = () => {
           </div>
         )}
 
-        {bill.stage === 'Assent' && role === 'Clerk' && (
+        {bill.stage === 'Assent' && (role === 'Clerk' || isSuper) && (
           <button type="button" className="btn btn-primary btn-md" onClick={() => advanceStage(bill.id, 'Enacted', 'Assented to and gazetted.')}>
             Record assent &amp; gazette
           </button>
@@ -250,7 +254,7 @@ const BillPage = () => {
       <Card className="dash-section">
         <div className="dash-section-header">
           <h2 style={{ marginBottom: 0 }}>Amendments ({bill.amendments.length})</h2>
-          {(role === 'MP' || role === 'Clerk') && (
+          {(role === 'MP' || role === 'Clerk' || isSuper) && (
             <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowProposeModal(true)}>
               <FilePenLine size={14} /> Propose Clause Amendment
             </button>
@@ -464,6 +468,8 @@ const BillPage = () => {
           </div>
         </div>
       )}
+
+      {showDoc && <BillDocumentModal bill={bill} onClose={() => setShowDoc(false)} />}
     </div>
   );
 };

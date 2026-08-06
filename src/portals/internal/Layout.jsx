@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { LayoutGrid, FileText, Radio, UserCog, Users2, Menu, Vote, FileBarChart, Scroll } from 'lucide-react';
+import { NavLink, Link, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { LayoutGrid, FileText, Radio, UserCog, Users2, Menu, Vote, FileBarChart, Scroll, Megaphone, Eye } from 'lucide-react';
 import { useApp } from '../../mock/store';
 import BrandMark from '../../components/ui/BrandMark';
 import GlobalSearch from '../../components/ui/GlobalSearch';
@@ -55,7 +55,7 @@ const Layout = () => {
             <Radio size={17} /> <span>Sitting</span>
             {session.live && <span className="portal-nav-live-dot" />}
           </NavLink>
-          {currentUser.roles[0] === 'Administrator' && (
+          {['Administrator', 'Superuser'].includes(currentUser.roles[0]) && (
             <NavLink to="/internal/users" className="portal-nav-link">
               <UserCog size={17} /> <span>Users</span>
             </NavLink>
@@ -67,6 +67,11 @@ const Layout = () => {
           <NavLink to="/internal/official-documents" className="portal-nav-link">
             <Scroll size={17} /> <span>Official Documents</span>
           </NavLink>
+          {['Clerk', 'Administrator', 'Superuser'].includes(currentUser.roles[0]) && (
+            <NavLink to="/internal/petitions" className="portal-nav-link">
+              <Megaphone size={17} /> <span>Petitions</span>
+            </NavLink>
+          )}
           <NavLink to="/internal/voting-records" className="portal-nav-link">
             <Vote size={17} /> <span>Voting Records</span>
           </NavLink>
@@ -74,6 +79,28 @@ const Layout = () => {
             <FileBarChart size={17} /> <span>Reports</span>
           </NavLink>
         </nav>
+
+        {currentUser.roles[0] === 'Superuser' && (
+          <>
+            <div className="portal-nav-label">View as</div>
+            <nav className="portal-nav">
+              {[
+                { view: '', label: 'Superuser' },
+                { view: 'mp', label: 'MP' },
+                { view: 'speaker', label: 'Speaker' },
+                { view: 'clerk', label: 'Clerk' },
+              ].map(({ view, label }) => (
+                <Link
+                  key={view}
+                  to={view ? `/internal?view=${view}` : '/internal'}
+                  className="portal-nav-link"
+                >
+                  <Eye size={17} /> <span>{label}</span>
+                </Link>
+              ))}
+            </nav>
+          </>
+        )}
 
         <div className="portal-sidebar-footer">
           <PortalSwitcher variant="sidebar" collapsed={collapsed} />

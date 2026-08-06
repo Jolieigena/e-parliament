@@ -13,6 +13,7 @@ const ROLE_TONE = {
   Speaker: 'progress',
   Clerk: 'neutral',
   Administrator: 'success',
+  Superuser: 'warning',
 };
 
 const Users = () => {
@@ -24,7 +25,7 @@ const Users = () => {
   const [success, setSuccess] = useState('');
   const [query, setQuery] = useState('');
 
-  if (currentUser.roles[0] !== 'Administrator') return <Navigate to="/internal" replace />;
+  if (!['Administrator', 'Superuser'].includes(currentUser.roles[0])) return <Navigate to="/internal" replace />;
 
   const emailFor = (memberId) => accounts.find((a) => a.memberId === memberId)?.email;
 

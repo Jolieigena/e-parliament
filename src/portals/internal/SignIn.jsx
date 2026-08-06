@@ -122,7 +122,8 @@ const InternalSignIn = () => {
                     navigate('/public');
                   } else if (action === 'internal') {
                     if (accounts && accounts.length > 0) {
-                      login(accounts[0].memberId);
+                      const demo = accounts.find((a) => a.memberId === 'm-super') || accounts[0];
+                      login(demo.memberId);
                     }
                     navigate('/internal');
                   } else if (action === 'government') {

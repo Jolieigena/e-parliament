@@ -1676,6 +1676,66 @@ footer.public-site-footer {
   text-underline-offset: 2px;
 }
 
+.footer-gallery-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-gallery-btn:hover {
+  color: var(--accent);
+}
+
+/* Gallery modal */
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(8, 11, 20, 0.92);
+  backdrop-filter: blur(10px);
+  overflow-y: auto;
+  padding: 48px 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  animation: galleryFade 0.2s ease;
+}
+
+.gallery-modal-inner {
+  max-width: 1080px;
+  width: 100%;
+}
+
+.gallery-modal .footer-gallery-head h3 {
+  color: #fff;
+}
+
+.gallery-modal .footer-gallery-head p {
+  color: var(--text-on-dark-muted);
+}
+
+.gallery-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 180px;
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .gallery-modal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 140px;
+  }
+}
+
 /* For Governments offer section */
 .gov-offer {
   margin: 44px 0;

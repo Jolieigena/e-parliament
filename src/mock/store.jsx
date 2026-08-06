@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
-import { seedAccounts, seedBills, seedCommittees, seedMembers, seedSession, STAGES } from './entities';
+import { seedAccounts, seedBills, seedCommittees, seedMembers, seedSession, STAGES, IDEA_PETITION_THRESHOLD } from './entities';
 import {
   seedInstitutions,
   seedGovUsers,
@@ -10,6 +10,38 @@ import {
 } from './govEntities';
 
 const STORAGE_KEY = 'ep_internal_v1';
+
+function petitionFromIdea(idea) {
+  return {
+    id: `pet-${idea.id}`,
+    title: idea.title,
+    desc: idea.description,
+    goal: 0,
+    base: idea.upvotes,
+    signed: false,
+    status: 'Submitted',
+    submittedBy: 'Public',
+    sourceIdeaId: idea.id,
+    date: idea.date,
+  };
+}
+
+// Ideas that reach the support threshold graduate into the petitions process.
+// They appear in the Clerk's inbox as 'Submitted' for validation before going live.
+function applyIdeaPromotions(ideas, petitions) {
+  let nextPetitions = petitions;
+  const toPromote = ideas.filter(
+    (idea) => idea.upvotes >= IDEA_PETITION_THRESHOLD && !petitions.some((p) => p.sourceIdeaId === idea.id),
+  );
+  if (toPromote.length > 0) {
+    nextPetitions = [...petitions, ...toPromote.map(petitionFromIdea)];
+  }
+  const promotedIds = new Set(toPromote.map((i) => i.id));
+  const nextIdeas = promotedIds.size > 0
+    ? ideas.map((i) => (promotedIds.has(i.id) ? { ...i, promoted: true } : i))
+    : ideas;
+  return { ideas: nextIdeas, petitions: nextPetitions };
+}
 
 const seedPublicIdeas = [
   {
@@ -47,6 +79,53 @@ const seedPublicIdeas = [
   },
 ];
 
+const seedPetitions = [
+  {
+    id: 'pet-1',
+    title: 'Extend free public transit to students under 18',
+    desc: 'Calls on the Assembly to expand the existing transit subsidy to all secondary school students nationwide.',
+    goal: 50000,
+    base: 38210,
+    signed: false,
+    status: 'Open',
+    submittedBy: 'Public',
+    date: '2026-06-10',
+  },
+  {
+    id: 'pet-2',
+    title: 'Require published environmental impact reports for all coastal permits',
+    desc: 'Asks committees to make environmental assessments public before approving coastal development.',
+    goal: 50000,
+    base: 12480,
+    signed: false,
+    status: 'Open',
+    submittedBy: 'Public',
+    date: '2026-06-21',
+  },
+  {
+    id: 'pet-3',
+    title: 'Faster appeals process for Freedom of Information refusals',
+    desc: 'Requests a statutory 30-day limit on appeals when an information request is refused.',
+    goal: 10000,
+    base: 9120,
+    signed: false,
+    status: 'Open',
+    submittedBy: 'Public',
+    date: '2026-07-02',
+  },
+  {
+    id: 'pet-4',
+    title: 'Guarantee a minimum number of rural broadband installers',
+    desc: 'Asks that the Digital Infrastructure rollout guarantee installer capacity in low-density regions, not just funding.',
+    goal: 10000,
+    base: 6710,
+    signed: false,
+    status: 'Open',
+    submittedBy: 'Public',
+    date: '2026-07-08',
+  },
+];
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -72,7 +151,7 @@ function mergeById(seedArr, loadedArr) {
 
 function initialState() {
   const loaded = loadState();
-  return {
+  const state = {
     currentUserId: null,
     accounts: seedAccounts,
     committees: seedCommittees,
@@ -85,10 +164,21 @@ function initialState() {
     committeeRequests: seedCommitteeRequests,
     documents: seedDocuments,
     publicIdeas: seedPublicIdeas,
+    petitions: seedPetitions,
     ...loaded,
     members: mergeById(seedMembers, loaded?.members),
     bills: mergeById(seedBills, loaded?.bills),
   };
+  // Cached accounts may predate a newly seeded account — backfill any seed
+  // account that is missing so new demo accounts (e.g. the superuser) work
+  // without clearing localStorage. Prepend so the newest demo accounts lead.
+  seedAccounts.forEach((seed) => {
+    if (!state.accounts.some((a) => a.memberId === seed.memberId)) {
+      state.accounts = [seed, ...state.accounts];
+    }
+  });
+  const promoted = applyIdeaPromotions(state.publicIdeas, state.petitions);
+  return { ...state, publicIdeas: promoted.ideas, petitions: promoted.petitions };
 }
 
 function nextStageOf(stage) {
@@ -193,6 +283,8 @@ function reducer(state, action) {
       const nextIdx = Math.min(state.session.currentItemIndex + 1, maxIdx);
       return { ...state, session: { ...state.session, currentItemIndex: nextIdx } };
     }
+    case 'SET_SESSION_LIVE':
+      return { ...state, session: { ...state.session, live: action.live } };
     case 'GOV_LOGIN':
       return { ...state, currentGovUserId: action.govUserId };
     case 'GOV_LOGOUT':
@@ -319,12 +411,92 @@ function reducer(state, action) {
     }
     case 'UPVOTE_IDEA': {
       const { ideaId } = action;
+      let publicIdeas = state.publicIdeas.map((i) => {
+        if (i.id !== ideaId || i.voted) return i;
+        return { ...i, upvotes: i.upvotes + 1, voted: true };
+      });
+      let petitions = state.petitions;
+      const idea = publicIdeas.find((i) => i.id === ideaId);
+      if (
+        idea &&
+        idea.upvotes >= IDEA_PETITION_THRESHOLD &&
+        !idea.promoted &&
+        !petitions.some((p) => p.sourceIdeaId === idea.id)
+      ) {
+        publicIdeas = publicIdeas.map((i) => (i.id === ideaId ? { ...i, promoted: true } : i));
+        petitions = [...petitions, petitionFromIdea(idea)];
+      }
+      return { ...state, publicIdeas, petitions };
+    }
+    case 'SUBMIT_PETITION': {
+      const { title, desc } = action;
+      const newPetition = {
+        id: `pet-${Date.now()}`,
+        title,
+        desc,
+        goal: 0,
+        base: 0,
+        signed: false,
+        status: 'Submitted',
+        submittedBy: 'Public',
+        date: new Date().toISOString().slice(0, 10),
+      };
+      return { ...state, petitions: [newPetition, ...state.petitions] };
+    }
+    case 'CREATE_PETITION': {
+      const { title, desc, goal } = action;
+      const newPetition = {
+        id: `pet-${Date.now()}`,
+        title,
+        desc,
+        goal: goal || 10000,
+        base: 0,
+        signed: false,
+        status: 'Open',
+        submittedBy: 'Clerk',
+        date: new Date().toISOString().slice(0, 10),
+      };
+      return { ...state, petitions: [newPetition, ...state.petitions] };
+    }
+    case 'OPEN_PETITION': {
+      const { petitionId, goal } = action;
       return {
         ...state,
-        publicIdeas: state.publicIdeas.map((i) => {
-          if (i.id !== ideaId || i.voted) return i;
-          return { ...i, upvotes: i.upvotes + 1, voted: true };
+        petitions: state.petitions.map((p) =>
+          p.id === petitionId
+            ? { ...p, status: 'Open', goal: goal || p.goal || 10000, openedBy: 'Clerk' }
+            : p,
+        ),
+      };
+    }
+    case 'REJECT_PETITION': {
+      const { petitionId, reason } = action;
+      return {
+        ...state,
+        petitions: state.petitions.map((p) =>
+          p.id === petitionId ? { ...p, status: 'Rejected', reason } : p,
+        ),
+      };
+    }
+    case 'SIGN_PETITION': {
+      const { petitionId } = action;
+      return {
+        ...state,
+        petitions: state.petitions.map((p) => {
+          if (p.id !== petitionId || p.status !== 'Open' || p.signed) return p;
+          return { ...p, base: p.base + 1, signed: true };
         }),
+      };
+    }
+    case 'RESPOND_TO_PETITION': {
+      const { petitionId, response } = action;
+      return {
+        ...state,
+        petitions: state.petitions.map((p) =>
+          p.id === petitionId
+            ? { ...p, status: 'Responded', response, responseDate: new Date().toISOString().slice(0, 10) }
+            : p,
+        ),
       };
     }
     default:
@@ -361,6 +533,7 @@ export function AppProvider({ children }) {
       castVote: (billId, choice) =>
         dispatch({ type: 'CAST_VOTE', billId, voterId: state.currentUserId, choice }),
       advanceOrderPaper: () => dispatch({ type: 'ADVANCE_ORDER_PAPER' }),
+      setSessionLive: (live) => dispatch({ type: 'SET_SESSION_LIVE', live }),
       logMeetingMinutes: (committeeId, meetingId, note) =>
         dispatch({ type: 'LOG_MEETING_MINUTES', committeeId, meetingId, note }),
 
@@ -389,6 +562,15 @@ export function AppProvider({ children }) {
       submitIdea: (title, category, description) =>
         dispatch({ type: 'SUBMIT_IDEA', title, category, description }),
       upvoteIdea: (ideaId) => dispatch({ type: 'UPVOTE_IDEA', ideaId }),
+      petitions: state.petitions,
+      submitPetition: (title, desc) => dispatch({ type: 'SUBMIT_PETITION', title, desc }),
+      createPetition: (title, desc, goal) => dispatch({ type: 'CREATE_PETITION', title, desc, goal }),
+      openPetition: (petitionId, goal) => dispatch({ type: 'OPEN_PETITION', petitionId, goal }),
+      rejectPetition: (petitionId, reason) =>
+        dispatch({ type: 'REJECT_PETITION', petitionId, reason }),
+      signPetition: (petitionId) => dispatch({ type: 'SIGN_PETITION', petitionId }),
+      respondToPetition: (petitionId, response) =>
+        dispatch({ type: 'RESPOND_TO_PETITION', petitionId, response }),
       callDivision: (billId, results) => dispatch({ type: 'CALL_DIVISION', billId, results }),
     }),
     [state, currentUser, currentGovUser],

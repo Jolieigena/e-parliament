@@ -3,9 +3,9 @@ import { ShieldCheck, Clock, MapPin, ArrowRight, Play } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 
 const SESSIONS_LIST = [
-  { d: '01', m: 'Aug', tag: 'Floor Debate', t: 'Ordinary Sitting — Floor Debate', s: 'Second reading: Digital Infrastructure Bill' },
+  { d: '01', m: 'Aug', tag: 'Floor Debate', t: 'Ordinary Sitting — Floor Debate', s: 'Second reading: Infrastructure Budget 2026' },
   { d: '05', m: 'Aug', tag: 'Question Time', t: 'Ministerial Oral Answers', s: 'Public questions to the Minister of Finance regarding budget forecasts' },
-  { d: '08', m: 'Aug', tag: 'Final Vote', t: 'Ordinary Sitting — Final Floor Vote', s: 'Third reading: Public Health Funding Amendment' },
+  { d: '08', m: 'Aug', tag: 'Final Vote', t: 'Ordinary Sitting — Final Floor Vote', s: 'Third reading: Public Sector Pension Reform Bill' },
   { d: '12', m: 'Aug', tag: 'Joint Sitting', t: 'Special Joint Assembly Sitting', s: 'Address by visiting international parliamentary delegation' },
 ];
 
@@ -26,7 +26,7 @@ const Sitting = () => {
               {session.name || 'Sitting 104 — Ordinary Plenary Session'}
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
-              Current Floor Debate: Second Reading on Digital Infrastructure Bill &middot; Presiding: Hon. S. Kamau
+              Current Floor Debate: Second Reading on Infrastructure Budget 2026 &middot; Presiding: Hon. S. Kamau
             </p>
           </div>
 

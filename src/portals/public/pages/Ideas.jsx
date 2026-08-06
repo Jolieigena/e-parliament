@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Lightbulb, ThumbsUp, Send, Check, X, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Lightbulb, ThumbsUp, Send, Check, X, ArrowRight, Megaphone } from 'lucide-react';
 import { useApp } from '../../../mock/store';
+import { IDEA_PETITION_THRESHOLD } from '../../../mock/entities';
 
 const IDEA_CATEGORIES = [
   'Governance',
@@ -61,7 +63,9 @@ const Ideas = () => {
             </span>
             <div className="idea-form-head-text">
               <b>Share your idea or request</b>
-              <small>Ideas that earn community support are shared with the relevant committees.</small>
+              <small>
+                Ideas that earn {IDEA_PETITION_THRESHOLD}+ community supports move into the petitions process.
+              </small>
             </div>
             <button
               type="button"
@@ -176,28 +180,51 @@ const Ideas = () => {
         </div>
       ) : (
         <div className="petitions-grid">
-          {filtered.map((idea) => (
-            <div key={idea.id} className="public-card petition-card idea-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="idea-chip">{idea.category}</span>
-                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                  {new Date(idea.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
-                </span>
-              </div>
-              <h4 style={{ margin: '2px 0 0' }}>{idea.title}</h4>
-              <p>{idea.description}</p>
+          {filtered.map((idea) => {
+            const pct = Math.min(100, Math.round((idea.upvotes / IDEA_PETITION_THRESHOLD) * 100));
 
-              <button
-                type="button"
-                className={`idea-vote-btn ${idea.voted ? 'voted' : ''}`}
-                onClick={() => !idea.voted && upvoteIdea(idea.id)}
-              >
-                {idea.voted ? <Check size={14} /> : <ThumbsUp size={14} />}
-                {idea.upvotes.toLocaleString()}
-                <span className="idea-vote-label">{idea.voted ? 'Supported' : 'Support'}</span>
-              </button>
-            </div>
-          ))}
+            return (
+              <div key={idea.id} className="public-card petition-card idea-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="idea-chip">{idea.category}</span>
+                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                    {new Date(idea.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+                <h4 style={{ margin: '2px 0 0' }}>{idea.title}</h4>
+                <p>{idea.description}</p>
+
+                <div className="petition-meter">
+                  <div className="nums">
+                    <b>{idea.upvotes.toLocaleString()} supports</b>
+                    <span>
+                      {idea.promoted ? (
+                        <Link to="/public/petitions" style={{ color: 'var(--brand)', fontWeight: 600, textDecoration: 'none' }}>
+                          <Megaphone size={12} style={{ verticalAlign: 'middle', marginRight: '2px' }} />
+                          Moved to petitions
+                        </Link>
+                      ) : (
+                        `${Math.max(0, IDEA_PETITION_THRESHOLD - idea.upvotes)} to the petition threshold`
+                      )}
+                    </span>
+                  </div>
+                  <div className="bar-track" style={{ height: '6px', background: 'var(--parchment)', borderRadius: '100px', overflow: 'hidden' }}>
+                    <div className="bar-fill" style={{ width: `${pct}%`, height: '100%', background: idea.promoted ? 'var(--success)' : 'var(--brand)', borderRadius: '100px' }} />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className={`idea-vote-btn ${idea.voted ? 'voted' : ''}`}
+                  onClick={() => !idea.voted && upvoteIdea(idea.id)}
+                >
+                  {idea.voted ? <Check size={14} /> : <ThumbsUp size={14} />}
+                  {idea.upvotes.toLocaleString()}
+                  <span className="idea-vote-label">{idea.voted ? 'Supported' : 'Support'}</span>
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

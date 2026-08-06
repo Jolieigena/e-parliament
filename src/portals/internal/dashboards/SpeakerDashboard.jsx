@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Users2, Vote, BadgeCheck, ArrowRight, Inbox, Gavel, Radio } from 'lucide-react';
+import { FileText, Users2, Vote, BadgeCheck, ArrowRight, Inbox, Gavel, Radio, Play, Pause } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { simulateChoice } from '../../../mock/division';
 import Card from '../../../components/ui/Card';
 import BillRow from '../../../components/ui/BillRow';
 import Hemicycle from '../../../components/ui/Hemicycle';
 import VoteBar from '../../../components/ui/VoteBar';
+import StageBadge from '../../../components/ui/StageBadge';
 
 const StatTile = ({ label, value, icon: Icon }) => (
   <Card className="stat-tile">
@@ -21,7 +22,7 @@ const StatTile = ({ label, value, icon: Icon }) => (
 );
 
 const SpeakerDashboard = () => {
-  const { currentUser, bills, session, members, callDivision } = useApp();
+  const { currentUser, bills, session, members, callDivision, setSessionLive } = useApp();
   const [liveVoters, setLiveVoters] = useState(null);
   const [liveVotes, setLiveVotes] = useState(null);
   const [divisionRunning, setDivisionRunning] = useState(false);
@@ -95,14 +96,14 @@ const SpeakerDashboard = () => {
         <div>
           <Card className="dash-section">
             <div className="dash-section-header">
-              <h2>Live vote tally</h2>
-              {votingBill && (
+              <h2>{session.live ? 'Live vote tally' : 'Prepared for next sitting'}</h2>
+              {votingBill && session.live && (
                 <Link to={`/internal/bills/${votingBill.id}`} className="dash-section-link">
                   Open bill <ArrowRight size={14} />
                 </Link>
               )}
             </div>
-            {votingBill ? (
+            {session.live && votingBill ? (
               <>
                 <p className="dash-footnote" style={{ marginBottom: '0.75rem' }}>{votingBill.title}</p>
                 <VoteBar votes={displayVotes} />
@@ -118,8 +119,25 @@ const SpeakerDashboard = () => {
                   </button>
                 )}
               </>
-            ) : (
+            ) : session.live ? (
               <p className="dash-empty-state"><Inbox size={15} /> No bill is currently up for a vote.</p>
+            ) : (
+              <>
+                <p className="dash-footnote">
+                  The chamber is adjourned — no live division in progress. Order paper readiness for {session.name}:
+                </p>
+                <ul className="agenda-list">
+                  {onFloorToday.map((bill) => (
+                    <li key={bill.id} className="agenda-row">
+                      <span className="row-title-with-icon">
+                        <FileText size={14} />
+                        <span>{bill.title}</span>
+                      </span>
+                      <StageBadge stage={bill.stage} />
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
           </Card>
           
@@ -128,10 +146,21 @@ const SpeakerDashboard = () => {
               <h2>Session control</h2>
             </div>
             <p className="dash-footnote">
-              {session.name} is currently <strong>{session.live ? 'live' : 'adjourned'}</strong>. Manage the
-              order paper, open the floor to debate, and control voting from the Sitting workspace.
+              {session.name} is currently <strong>{session.live ? 'live' : 'adjourned'}</strong>.{' '}
+              {session.live
+                ? 'Manage the order paper, open the floor to debate, and control voting from the Sitting workspace.'
+                : 'Open the sitting to resume the order paper from where it left off.'}
             </p>
-            <Link to="/internal/session" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>
+            {session.live ? (
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }} onClick={() => setSessionLive(false)}>
+                <Pause size={15} /> Adjourn sitting
+              </button>
+            ) : (
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }} onClick={() => setSessionLive(true)}>
+                <Play size={15} /> Start sitting
+              </button>
+            )}
+            <Link to="/internal/session" className="btn btn-secondary btn-sm" style={{ marginTop: '1rem', marginLeft: '0.5rem' }}>
               Open sitting controls
             </Link>
           </Card>

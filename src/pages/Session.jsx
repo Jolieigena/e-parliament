@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronRight, Video, Radio } from 'lucide-react';
+import { ArrowRight, ChevronRight, Video, Radio, Play, Pause } from 'lucide-react';
 import { useApp } from '../mock/store';
 import { categoryIcon } from '../mock/categoryMeta';
 import Card from '../components/ui/Card';
@@ -7,7 +7,7 @@ import StageBadge from '../components/ui/StageBadge';
 import VoteBar from '../components/ui/VoteBar';
 
 const Session = () => {
-  const { session, bills, currentUser, advanceOrderPaper } = useApp();
+  const { session, bills, currentUser, advanceOrderPaper, setSessionLive } = useApp();
   const role = currentUser.roles[0];
 
   const orderPaperBills = session.orderPaper.map((item, i) => ({
@@ -18,6 +18,7 @@ const Session = () => {
 
   const current = orderPaperBills[session.currentItemIndex];
   const isLastItem = session.currentItemIndex >= session.orderPaper.length - 1;
+  const canControl = role === 'Speaker' || role === 'Clerk' || role === 'Superuser';
 
   return (
     <div>
@@ -25,14 +26,30 @@ const Session = () => {
         <h1 className="portal-page-title" style={{ marginBottom: 0 }}>
           <span className="page-title-icon-wrap"><Radio size={20} /></span> {session.name}
         </h1>
-        {session.live && (
-          <Link to="/internal/session/live" className="btn btn-primary btn-sm">
-            <Video size={16} /> Join sitting
-          </Link>
-        )}
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {session.live && (
+            <Link to="/internal/session/live" className="btn btn-primary btn-sm">
+              <Video size={16} /> Join sitting
+            </Link>
+          )}
+          {canControl && (
+            session.live ? (
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSessionLive(false)}>
+                <Pause size={15} /> Adjourn sitting
+              </button>
+            ) : (
+              <button type="button" className="btn btn-primary btn-sm" onClick={() => setSessionLive(true)}>
+                <Play size={15} /> Start sitting
+              </button>
+            )
+          )}
+        </div>
       </div>
       <p className="portal-page-subtitle">
         {session.live ? 'This sitting is currently live.' : 'This sitting has been adjourned.'}
+        {!session.live && session.date && (
+          <span style={{ color: 'var(--text-muted)' }}> Next sitting scheduled for {new Date(session.date).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.</span>
+        )}
       </p>
 
       {current?.bill && (
@@ -52,9 +69,9 @@ const Session = () => {
 
           <div className="session-current-actions">
             <Link to={`/internal/bills/${current.bill.id}`} className="dash-section-link">
-              {role === 'MP' && current.bill.stage === 'Voting' ? 'Cast your vote' : 'View bill'} <ArrowRight size={14} />
+              {(role === 'MP' || role === 'Superuser') && current.bill.stage === 'Voting' ? 'Cast your vote' : 'View bill'} <ArrowRight size={14} />
             </Link>
-            {role === 'Speaker' && !isLastItem && (
+            {(role === 'Speaker' || role === 'Superuser') && !isLastItem && (
               <button type="button" className="btn btn-secondary btn-sm" onClick={advanceOrderPaper}>
                 Advance to next item <ChevronRight size={15} />
               </button>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { NavLink, Link, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { LayoutGrid, FileText, Radio, UserCog, Users2, Menu, Vote, FileBarChart, Scroll, Megaphone, Eye, Video } from 'lucide-react';
+import { NavLink, Link, Navigate, Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import { LayoutGrid, FileText, Radio, UserCog, Users2, Menu, Vote, FileBarChart, Scroll, Megaphone, Eye } from 'lucide-react';
 import { useApp } from '../../mock/store';
 import BrandMark from '../../components/ui/BrandMark';
 import GlobalSearch from '../../components/ui/GlobalSearch';
@@ -15,18 +15,44 @@ const ROUTE_TITLES = {
   bills: 'Bills',
   committees: 'Committees',
   session: 'Sitting',
-  users: 'Users',
+  accounts: 'Accounts',
   'voting-records': 'Voting Records',
   reports: 'Reports',
   'official-documents': 'Official Documents',
 };
 
+const VIEW_ROLES = { mp: 'MP', speaker: 'Speaker', clerk: 'Clerk' };
+
+// Which permission grants access to each sidebar item.
+const NAV_PERMS = {
+  overview: 'view_overview',
+  bills: 'manage_bills',
+  committees: 'manage_committees',
+  session: 'manage_sitting',
+  accounts: 'manage_users',
+  documents: 'manage_documents',
+  petitions: 'manage_petitions',
+  records: 'view_records',
+  reports: 'view_reports',
+};
+
 const Layout = () => {
-  const { currentUser, session } = useApp();
+  const { currentUser, roles, session } = useApp();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const [params] = useSearchParams();
 
   if (!currentUser) return <Navigate to="/internal/signin" replace />;
+
+  // A Superuser can preview another role's workspace via ?view=mp|speaker|clerk.
+  // The sidebar follows the previewed role's permissions, not the superuser's.
+  const effectiveRole =
+    currentUser.roles[0] === 'Superuser' && VIEW_ROLES[params.get('view')]
+      ? VIEW_ROLES[params.get('view')]
+      : currentUser.roles[0];
+
+  const roleDef = roles.find((r) => r.name === effectiveRole);
+  const can = (perm) => roleDef?.permissions?.includes(perm) ?? false;
 
   const segment = location.pathname.replace(/^\/internal\/?/, '').split('/')[0];
   const title = ROUTE_TITLES[segment] ?? 'Overview';
@@ -41,43 +67,61 @@ const Layout = () => {
           <span>E-Parliament</span>
         </div>
 
+        {can(NAV_PERMS.overview) && (
+          <nav className="portal-nav">
+            <NavLink to="/internal" end className="portal-nav-link">
+              <LayoutGrid size={17} /> <span>Overview</span>
+            </NavLink>
+          </nav>
+        )}
+
+        <div className="portal-nav-label">Chamber</div>
         <nav className="portal-nav">
-          <NavLink to="/internal" end className="portal-nav-link">
-            <LayoutGrid size={17} /> <span>Overview</span>
-          </NavLink>
-          <NavLink to="/internal/bills" className="portal-nav-link">
-            <FileText size={17} /> <span>Bills</span>
-          </NavLink>
-          <NavLink to="/internal/committees" className="portal-nav-link">
-            <Users2 size={17} /> <span>Committees</span>
-          </NavLink>
-          <NavLink to="/internal/session" className="portal-nav-link">
-            <Radio size={17} /> <span>Sitting</span>
-            {session.live && <span className="portal-nav-live-dot" />}
-          </NavLink>
-          {['Administrator', 'Superuser'].includes(currentUser.roles[0]) && (
-            <NavLink to="/internal/users" className="portal-nav-link">
-              <UserCog size={17} /> <span>Users</span>
+          {can(NAV_PERMS.bills) && (
+            <NavLink to="/internal/bills" className="portal-nav-link">
+              <FileText size={17} /> <span>Bills</span>
+            </NavLink>
+          )}
+          {can(NAV_PERMS.committees) && (
+            <NavLink to="/internal/committees" className="portal-nav-link">
+              <Users2 size={17} /> <span>Committees</span>
+            </NavLink>
+          )}
+          {can(NAV_PERMS.session) && (
+            <NavLink to="/internal/session" className="portal-nav-link">
+              <Radio size={17} /> <span>Sitting</span>
+              {session.live && <span className="portal-nav-live-dot" />}
+            </NavLink>
+          )}
+          {can(NAV_PERMS.accounts) && (
+            <NavLink to="/internal/accounts" className="portal-nav-link">
+              <UserCog size={17} /> <span>Accounts</span>
             </NavLink>
           )}
         </nav>
 
         <div className="portal-nav-label">Records</div>
         <nav className="portal-nav">
-          <NavLink to="/internal/official-documents" className="portal-nav-link">
-            <Scroll size={17} /> <span>Official Documents</span>
-          </NavLink>
-          {['Clerk', 'Administrator', 'Superuser'].includes(currentUser.roles[0]) && (
+          {can(NAV_PERMS.documents) && (
+            <NavLink to="/internal/official-documents" className="portal-nav-link">
+              <Scroll size={17} /> <span>Official Documents</span>
+            </NavLink>
+          )}
+          {can(NAV_PERMS.petitions) && (
             <NavLink to="/internal/petitions" className="portal-nav-link">
               <Megaphone size={17} /> <span>Petitions</span>
             </NavLink>
           )}
-          <NavLink to="/internal/voting-records" className="portal-nav-link">
-            <Vote size={17} /> <span>Voting Records</span>
-          </NavLink>
-          <NavLink to="/internal/reports" className="portal-nav-link">
-            <FileBarChart size={17} /> <span>Reports</span>
-          </NavLink>
+          {can(NAV_PERMS.records) && (
+            <NavLink to="/internal/voting-records" className="portal-nav-link">
+              <Vote size={17} /> <span>Voting Records</span>
+            </NavLink>
+          )}
+          {can(NAV_PERMS.reports) && (
+            <NavLink to="/internal/reports" className="portal-nav-link">
+              <FileBarChart size={17} /> <span>Reports</span>
+            </NavLink>
+          )}
         </nav>
 
         {currentUser.roles[0] === 'Superuser' && (

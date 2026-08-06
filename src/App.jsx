@@ -11,7 +11,7 @@ import Session from './pages/Session';
 import LiveSitting from './pages/LiveSitting';
 import Committees from './pages/Committees';
 import CommitteePage from './pages/CommitteePage';
-import Users from './pages/Users';
+import Accounts from './pages/Accounts';
 import VotingRecords from './pages/VotingRecords';
 import Reports from './pages/Reports';
 import OfficialDocuments from './pages/OfficialDocuments';
@@ -68,7 +68,7 @@ function App() {
             <Route path="session/live" element={<LiveSitting />} />
             <Route path="committees" element={<Committees />} />
             <Route path="committees/:committeeId" element={<CommitteePage />} />
-            <Route path="users" element={<Users />} />
+            <Route path="accounts" element={<Accounts />} />
             <Route path="official-documents" element={<OfficialDocuments />} />
             <Route path="petitions" element={<Petitions />} />
             <Route path="voting-records" element={<VotingRecords />} />

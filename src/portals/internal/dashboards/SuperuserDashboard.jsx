@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FileText, Users2, Vote, BadgeCheck, ArrowRight, Inbox, Megaphone, Radio, CalendarDays, Gavel } from 'lucide-react';
+import { FileText, Users2, Vote, BadgeCheck, ArrowRight, Inbox, Megaphone, Radio, CalendarDays, Gavel, ShieldCheck, UserCog } from 'lucide-react';
 import { useApp } from '../../../mock/store';
 import { seedUpcomingSittings } from '../../../mock/entities';
 import Card from '../../../components/ui/Card';
@@ -121,6 +121,21 @@ const SuperuserDashboard = () => {
         </div>
 
         <div>
+          <Card className="dash-section">
+            <div className="dash-section-header">
+              <h2><ShieldCheck size={16} style={{ display: 'inline', verticalAlign: '-3px', marginRight: '0.5rem' }}/> Role management</h2>
+            </div>
+            <p className="dash-footnote">Sign up accounts, change who holds which role, create new roles, and control what each role can do.</p>
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <Link to="/internal/accounts?tab=roles" className="btn btn-primary btn-sm" style={{ textDecoration: 'none' }}>
+                <ShieldCheck size={16} /> Roles & permissions
+              </Link>
+              <Link to="/internal/accounts" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}>
+                <UserCog size={16} /> People & accounts
+              </Link>
+            </div>
+          </Card>
+
           <Card className="dash-section">
             <div className="dash-section-header">
               <h2>Chamber composition</h2>

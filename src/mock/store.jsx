@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
-import { seedAccounts, seedBills, seedCommittees, seedMembers, seedSession, STAGES, IDEA_PETITION_THRESHOLD } from './entities';
+import { seedAccounts, seedBills, seedCommittees, seedMembers, seedSession, STAGES, IDEA_PETITION_THRESHOLD, seedRolePermissions, ROLE_PALETTE } from './entities';
 import {
   seedInstitutions,
   seedGovUsers,
@@ -154,6 +154,7 @@ function initialState() {
   const state = {
     currentUserId: null,
     accounts: seedAccounts,
+    roles: seedRolePermissions,
     committees: seedCommittees,
     session: seedSession,
     currentGovUserId: null,
@@ -175,6 +176,17 @@ function initialState() {
   seedAccounts.forEach((seed) => {
     if (!state.accounts.some((a) => a.memberId === seed.memberId)) {
       state.accounts = [seed, ...state.accounts];
+    }
+  });
+  // Accounts created before account status existed default to active.
+  state.accounts = state.accounts.map((a) => ({ active: true, ...a }));
+  // Cached state may predate the roles/permissions feature — seed any built-in
+  // role that is missing so customised roles survive reloads while new roles
+  // are still available. Existing role definitions (incl. edited permissions)
+  // are never overwritten.
+  seedRolePermissions.forEach((seed) => {
+    if (!state.roles.some((r) => r.name === seed.name)) {
+      state.roles.push({ name: seed.name, color: ROLE_PALETTE[state.roles.length % ROLE_PALETTE.length], ...seed });
     }
   });
   const promoted = applyIdeaPromotions(state.publicIdeas, state.petitions);
@@ -203,12 +215,52 @@ function reducer(state, action) {
         constituency: role === 'MP' ? 'Unassigned constituency' : null,
         committees: [],
       };
-      const newAccount = { email: email.toLowerCase(), memberId };
+      const newAccount = { email: email.toLowerCase(), memberId, active: true };
       return {
         ...state,
         members: [...state.members, newMember],
         accounts: [...state.accounts, newAccount],
       };
+    }
+    case 'UPDATE_USER_ROLE': {
+      const { memberId, role } = action;
+      return {
+        ...state,
+        members: state.members.map((m) =>
+          m.id === memberId ? { ...m, roles: [role] } : m,
+        ),
+      };
+    }
+    case 'TOGGLE_ACCOUNT_STATUS': {
+      const { memberId } = action;
+      return {
+        ...state,
+        accounts: state.accounts.map((a) =>
+          a.memberId === memberId ? { ...a, active: !(a.active ?? true) } : a,
+        ),
+      };
+    }
+    case 'CREATE_ROLE': {
+      const { name } = action;
+      const role = {
+        name,
+        color: ROLE_PALETTE[state.roles.length % ROLE_PALETTE.length],
+        permissions: [],
+      };
+      return { ...state, roles: [...state.roles, role] };
+    }
+    case 'SET_ROLE_PERMISSIONS': {
+      const { role, permissions } = action;
+      return {
+        ...state,
+        roles: state.roles.map((r) =>
+          r.name === role ? { ...r, permissions } : r,
+        ),
+      };
+    }
+    case 'DELETE_ROLE': {
+      const { role } = action;
+      return { ...state, roles: state.roles.filter((r) => r.name !== role) };
     }
     case 'ADVANCE_STAGE': {
       const { billId, stage, note } = action;
@@ -521,12 +573,18 @@ export function AppProvider({ children }) {
       currentUser,
       members: state.members,
       accounts: state.accounts,
+      roles: state.roles,
       bills: state.bills,
       committees: state.committees,
       session: state.session,
       login: (memberId) => dispatch({ type: 'LOGIN', memberId }),
       logout: () => dispatch({ type: 'LOGOUT' }),
       addUser: (name, email, role) => dispatch({ type: 'ADD_USER', name, email, role }),
+      updateUserRole: (memberId, role) => dispatch({ type: 'UPDATE_USER_ROLE', memberId, role }),
+      toggleAccountStatus: (memberId) => dispatch({ type: 'TOGGLE_ACCOUNT_STATUS', memberId }),
+      createRole: (name) => dispatch({ type: 'CREATE_ROLE', name }),
+      setRolePermissions: (role, permissions) => dispatch({ type: 'SET_ROLE_PERMISSIONS', role, permissions }),
+      deleteRole: (role) => dispatch({ type: 'DELETE_ROLE', role }),
       advanceStage: (billId, stage, note) => dispatch({ type: 'ADVANCE_STAGE', billId, stage, note }),
       referToCommittee: (billId, committee) => dispatch({ type: 'REFER_TO_COMMITTEE', billId, committee }),
       nextStageOf,

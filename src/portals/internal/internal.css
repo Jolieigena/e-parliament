@@ -1408,6 +1408,166 @@ a.agenda-row:hover {
   font-size: 0.78rem;
   color: var(--text-muted);
 }
+.user-list-inactive {
+  opacity: 0.55;
+}
+.user-role-select {
+  width: auto;
+  min-width: 120px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+}
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.icon-btn:hover:not(:disabled) {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: var(--border);
+}
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ===== Account management ===== */
+.acct-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.acct-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.acct-tab:hover {
+  color: var(--text-strong);
+}
+.acct-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.roles-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+.new-role-form {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.role-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.role-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.role-row:hover {
+  border-color: var(--accent);
+}
+.role-row.active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+.role-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.role-row-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  flex: 1;
+}
+.role-row-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.permission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+.permission-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.permission-row:hover {
+  border-color: var(--accent);
+}
+.permission-row.checked {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+.permission-row input {
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+}
+.permission-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.permission-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+.permission-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.perm-save-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
 
 /* ===== Committees Redesign ===== */
 .committee-grid {

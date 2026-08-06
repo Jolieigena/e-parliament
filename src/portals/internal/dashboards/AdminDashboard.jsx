@@ -23,10 +23,10 @@ const AdminDashboard = () => {
         </div>
         <p className="dash-footnote">
           <strong>{members.length}</strong> accounts currently provisioned. Create new accounts and
-          assign roles from the Users workspace.
+          assign roles from the Accounts workspace.
         </p>
-        <Link to="/internal/users" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>
-          <UserCog size={16} /> Manage users
+        <Link to="/internal/accounts" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>
+          <UserCog size={16} /> Manage accounts
         </Link>
       </Card>
     </div>

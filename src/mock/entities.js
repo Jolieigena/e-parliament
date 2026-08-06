@@ -3,6 +3,40 @@ export const TERMINAL_EXITS = ['Withdrawn', 'Rejected'];
 export const ROLES = ['MP', 'Speaker', 'Clerk', 'Administrator', 'Superuser'];
 export const IDEA_PETITION_THRESHOLD = 100;
 
+// Capability catalogue — every action a role can be granted in the system.
+export const PERMISSIONS = [
+  { id: 'view_overview', label: 'View overview dashboard', desc: 'See the role-specific overview page.' },
+  { id: 'manage_bills', label: 'Manage bills & stages', desc: 'Advance bills through the legislative stages.' },
+  { id: 'manage_committees', label: 'Manage committees & meetings', desc: 'Schedule committee meetings and log minutes.' },
+  { id: 'manage_sitting', label: 'Run plenary sitting', desc: 'Open/adjourn sittings and steer the order paper.' },
+  { id: 'manage_petitions', label: 'Validate & respond to petitions', desc: 'Approve, open, reject, or respond to petitions.' },
+  { id: 'manage_users', label: 'Manage user accounts', desc: 'Create accounts and change member roles.' },
+  { id: 'manage_roles', label: 'Manage roles & permissions', desc: 'Create roles and assign permissions.' },
+  { id: 'view_records', label: 'View voting records', desc: 'Browse recorded divisions and outcomes.' },
+  { id: 'view_reports', label: 'View reports', desc: 'Read chamber and committee reports.' },
+  { id: 'manage_documents', label: 'Manage official documents', desc: 'Submit and organise official documents.' },
+];
+
+export const ROLE_COLORS = {
+  MP: '#3B6E8F',
+  Speaker: '#B8862E',
+  Clerk: '#7A5AA6',
+  Administrator: '#4C7A3A',
+  Superuser: '#B8433E',
+};
+
+// Palette drawn from when a superuser creates a brand-new role.
+export const ROLE_PALETTE = ['#3B6E8F', '#B8862E', '#7A5AA6', '#4C7A3A', '#2F6B5F', '#8A4B6E', '#8A6D2F', '#5A5FA0'];
+
+// Default permission grants per built-in role. Superuser holds every capability.
+export const seedRolePermissions = [
+  { name: 'MP', permissions: ['view_overview', 'manage_bills', 'view_records'] },
+  { name: 'Speaker', permissions: ['view_overview', 'manage_bills', 'manage_sitting', 'view_records', 'view_reports'] },
+  { name: 'Clerk', permissions: ['view_overview', 'manage_bills', 'manage_petitions', 'manage_documents', 'view_records', 'view_reports'] },
+  { name: 'Administrator', permissions: ['view_overview', 'manage_users', 'view_records', 'view_reports', 'manage_documents'] },
+  { name: 'Superuser', permissions: PERMISSIONS.map((p) => p.id) },
+];
+
 export const PARTIES = [
   { id: 'party-progressive', name: 'Progressive Alliance', color: '#3B6E8F' },
   { id: 'party-unity', name: 'National Unity Party', color: '#4C7A3A' },

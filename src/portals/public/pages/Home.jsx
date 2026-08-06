@@ -389,7 +389,7 @@ const Home = () => {
                     </div>
 
                     <div className="bill-actions">
-                      <Link to={`/public/bills/${bill.id}`} className="btn btn-primary btn-md" style={{ textDecoration: 'none', width: '100%', justifyContent: 'center' }}>
+                      <Link to={`/public/bills/${bill.id}`} className="btn btn-secondary btn-md" style={{ textDecoration: 'none', width: '100%', justifyContent: 'center' }}>
                         Read full summary
                       </Link>
                     </div>

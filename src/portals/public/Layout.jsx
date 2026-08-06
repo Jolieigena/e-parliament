@@ -95,8 +95,8 @@ const Layout = () => {
 
             <Link
               to="/internal/signin"
-              className="btn btn-secondary btn-sm"
-              style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '12.5px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+              className="btn btn-ghost btn-sm"
+              style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '12.5px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px' }}
             >
               <LogIn size={14} /> Sign In
             </Link>

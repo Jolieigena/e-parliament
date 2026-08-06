@@ -27,9 +27,43 @@
 
 .public-card {
   background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
+  border: 1px solid rgba(0, 0, 0, 0.03) !important;
   border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
+}
+
+.feature-hub-card {
+  padding: 22px;
+  text-decoration: none;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.feature-hub-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-tint) !important;
+}
+
+.feature-hub-card:hover .feature-icon-box {
+  transform: scale(1.08);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+}
+
+.feature-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Header & Nav */
@@ -46,7 +80,7 @@ header.public-site-header {
 .public-header-inner {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -86,23 +120,45 @@ nav.public-main-nav {
 nav.public-main-nav a {
   text-decoration: none;
   padding: 6px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-muted);
   white-space: nowrap;
-  transition: background .15s, color .15s;
+  position: relative;
+  transition: color .15s;
+}
+
+nav.public-main-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background-color: var(--accent);
+  border-radius: 2px 2px 0 0;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 nav.public-main-nav a:hover {
-  background: var(--accent-tint-soft);
   color: var(--text-strong);
 }
 
+nav.public-main-nav a:hover::after {
+  opacity: 0.4;
+  transform: translateY(0);
+}
+
 nav.public-main-nav a.active {
-  background: var(--accent) !important;
-  color: #ffffff !important;
-  box-shadow: var(--nav-glow);
+  color: var(--accent) !important;
+}
+
+nav.public-main-nav a.active::after {
+  opacity: 1;
+  transform: translateY(0);
+  box-shadow: 0 1px 6px rgba(37, 99, 235, 0.4);
 }
 
 .public-content {
@@ -369,8 +425,8 @@ nav.public-main-nav a.active {
   gap: 8px;
   padding: 12px 28px;
   border-radius: 9999px;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -462,37 +518,62 @@ nav.public-main-nav a.active {
   margin-top: 1px;
 }
 
-/* Today Agenda Grid */
-.agenda-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
+/* Today Agenda List (Editorial Timeline) */
+.agenda-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
 }
 
-.agenda-card {
-  padding: 18px 20px;
+.agenda-list-item {
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
 }
 
-.agenda-card .tag {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 9px;
-  border-radius: var(--radius-pill);
-  background: var(--accent-tint);
+.agenda-list-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] .agenda-list-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.agenda-list-item-inner {
+  display: flex;
+  gap: 32px;
+  padding: 24px 16px;
+  align-items: flex-start;
+}
+
+.agenda-time-col {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.agenda-time-col .tag {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
   color: var(--accent);
-  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0;
+  background: transparent;
 }
 
-.agenda-card h4 {
-  font-size: 14.5px;
-  margin-bottom: 6px;
+.agenda-content-col h4 {
+  font-size: 16px;
+  margin: -3px 0 6px 0;
 }
 
-.agenda-card p {
-  font-size: 12.5px;
+.agenda-content-col p {
+  font-size: 13.5px;
   color: var(--text-muted);
   margin: 0;
+  line-height: 1.5;
 }
 
 /* Public Filter Bar (Search & Select) */
@@ -715,22 +796,70 @@ nav.public-main-nav a.active {
   border-radius: 100px;
 }
 
-.public-bills-grid {
+.public-bills-asym-layout {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
 }
 
-@media (max-width: 1024px) {
-  .public-bills-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .public-bills-grid {
+@media (max-width: 960px) {
+  .public-bills-asym-layout {
     grid-template-columns: 1fr;
   }
+}
+
+.featured-bill-card {
+  padding: 32px !important;
+  border-radius: 24px !important;
+  height: 100%;
+}
+
+.featured-bill-card h2 {
+  font-size: 24px;
+  margin: 6px 0 12px;
+}
+
+.other-bills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.other-bill-item {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.other-bill-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.other-bill-item .topic {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.other-bill-item h4 {
+  font-size: 14px;
+  color: var(--text-strong);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.public-bills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
 }
 
 .public-bill-card {
@@ -1742,13 +1871,13 @@ footer.public-site-footer {
   border-radius: 28px;
   padding: 44px 40px;
   background:
-    radial-gradient(80% 90% at 88% 8%, rgba(99, 102, 241, 0.4), transparent 60%),
-    radial-gradient(60% 70% at 10% 100%, rgba(79, 70, 229, 0.28), transparent 55%),
-    linear-gradient(135deg, #14213d 0%, #1c2d4d 100%);
+    radial-gradient(80% 90% at 88% 8%, rgba(37, 99, 235, 0.4), transparent 60%),
+    radial-gradient(60% 70% at 10% 100%, rgba(59, 130, 246, 0.28), transparent 55%),
+    linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: #ffffff;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .gov-offer::after {
@@ -1773,9 +1902,9 @@ footer.public-site-footer {
   align-items: center;
   padding: 5px 14px;
   border-radius: 100px;
-  background: rgba(129, 140, 248, 0.2);
-  border: 1px solid rgba(165, 180, 252, 0.35);
-  color: #a5b4fc !important;
+  background: rgba(96, 165, 250, 0.2);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  color: #bfdbfe !important;
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -1808,19 +1937,14 @@ footer.public-site-footer {
 }
 
 .gov-offer-item {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
-  padding: 20px;
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  backdrop-filter: blur(8px);
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: transform 0.15s ease;
+  padding: 12px 0;
 }
 
 .gov-offer-item:hover {
-  background: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
 }
 
@@ -1828,9 +1952,9 @@ footer.public-site-footer {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: rgba(129, 140, 248, 0.25);
-  border: 1px solid rgba(165, 180, 252, 0.3);
-  color: #a5b4fc;
+  background: transparent;
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  color: #93c5fd;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1861,6 +1985,16 @@ footer.public-site-footer {
 
 .gov-offer-cta .btn {
   text-decoration: none;
+  background: #ffffff;
+  color: #0f172a;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+.gov-offer-cta .btn:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 .gov-offer-link {

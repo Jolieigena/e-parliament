@@ -74,61 +74,102 @@ const Home = () => {
             </Reveal>
           </div>
 
-          {/* RIGHT LIVE BROADCAST CHAMBER CARD */}
+          {/* RIGHT CHAMBER CARD (LIVE OR ADJOURNED) */}
           <Reveal delay={360}>
-          <div className="hero-live-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div className="live-badge">
-                  <span className="pulse-dot" /> LIVE SITTING IN SESSION
+          {session?.live ? (
+            <div className="hero-live-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div className="live-badge">
+                    <span className="pulse-dot" /> LIVE SITTING IN SESSION
+                  </div>
+                  <span className="live-rec"><span className="rec-dot" /> REC</span>
                 </div>
-                <span className="live-rec"><span className="rec-dot" /> REC</span>
+                <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Plenary Floor</span>
               </div>
-              <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Plenary Floor</span>
-            </div>
 
-            <div className="player-preview">
-              <div className="player-overlay">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', background: 'rgba(15,23,42,0.6)', padding: '3px 8px', borderRadius: '4px', color: '#fff', fontWeight: 600 }}>
-                    HD Broadcast 1080p
-                  </span>
-                  <Volume2 size={16} color="#fff" />
+              <div className="player-preview">
+                <div className="player-overlay">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', background: 'rgba(15,23,42,0.6)', padding: '3px 8px', borderRadius: '4px', color: '#fff', fontWeight: 600 }}>
+                      HD Broadcast 1080p
+                    </span>
+                    <Volume2 size={16} color="#fff" />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Link to="/public/sitting/live" className="play-icon-circle">
+                      <Play size={20} style={{ marginLeft: '3px' }} />
+                    </Link>
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
+                    {session?.name || 'Ordinary Sitting — Floor Debate'}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Link to="/public/sitting/live" className="play-icon-circle">
-                    <Play size={20} style={{ marginLeft: '3px' }} />
-                  </Link>
-                </div>
-                <div style={{ fontSize: '11.5px', color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
-                  {session.name || 'Ordinary Sitting — Floor Debate'}
+              </div>
+
+              <div className="live-progress-wrap">
+                <div className="live-progress-track">
+                  <div className="live-progress-fill" />
                 </div>
               </div>
-            </div>
 
-            <div className="live-progress-wrap">
-              <div className="live-progress-track">
-                <div className="live-progress-fill" />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.65)', fontWeight: 600, marginBottom: '10px' }}>
+                <span>Streaming live · HD 1080p</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                  <span className="viewer-dot" /> 1,284 watching
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
+                <div>
+                  <div style={{ fontWeight: 700, color: '#fff' }}>Current Business: Infrastructure Budget 2026</div>
+                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', marginTop: '2px' }}>Hon. S. Kamau (Speaker presiding)</div>
+                </div>
+                <Link to="/public/sitting/live" className="btn btn-primary btn-sm" style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '11.5px' }}>
+                  Watch Live Stream
+                </Link>
               </div>
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.65)', fontWeight: 600, marginBottom: '10px' }}>
-              <span>Streaming live · HD 1080p</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span className="viewer-dot" /> 1,284 watching
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
-              <div>
-                <div style={{ fontWeight: 700, color: '#fff' }}>Current Business: Infrastructure Budget 2026</div>
-                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', marginTop: '2px' }}>Hon. S. Kamau (Speaker presiding)</div>
+          ) : (
+            <div className="hero-live-card" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div className="live-badge" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    CHAMBER ADJOURNED
+                  </div>
+                </div>
+                <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Plenary Floor</span>
               </div>
-              <Link to="/public/sitting/live" className="btn btn-primary btn-sm" style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '11.5px' }}>
-                Watch Live Stream
-              </Link>
+
+              <div className="player-preview" style={{ filter: 'grayscale(0.6) brightness(0.8)' }}>
+                <div className="player-overlay" style={{ background: 'rgba(0,0,0,0.5)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', background: 'rgba(15,23,42,0.8)', padding: '3px 8px', borderRadius: '4px', color: '#fff', fontWeight: 600 }}>
+                      Next: Tomorrow, 9:00 AM
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', opacity: 0.7 }}>
+                    <div style={{ padding: '16px', borderRadius: '50%', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                       <Video size={28} color="#fff" />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.8)', textAlign: 'center' }}>
+                    Awaiting next sitting
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', marginTop: '12px' }}>
+                <div>
+                  <div style={{ fontWeight: 700, color: '#fff' }}>No live broadcast at the moment</div>
+                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', marginTop: '2px' }}>The chamber is currently adjourned.</div>
+                </div>
+                <Link to="/public/sitting" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none', whiteSpace: 'nowrap', fontSize: '11.5px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  Watch Past Recordings
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
           </Reveal>
         </div>
 
@@ -173,8 +214,8 @@ const Home = () => {
       {/* QUICK ACTION FEATURE HUB */}
       <Reveal delay={100}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', margin: '36px 0' }}>
-        <Link to="/public/bills" className="public-card" style={{ padding: '22px', textDecoration: 'none', display: 'flex', gap: '14px', alignItems: 'center', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--accent-tint)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Link to="/public/bills" className="public-card feature-hub-card">
+          <div className="feature-icon-box">
             <FileText size={22} />
           </div>
           <div>
@@ -183,8 +224,8 @@ const Home = () => {
           </div>
         </Link>
 
-        <Link to="/public/members" className="public-card" style={{ padding: '22px', textDecoration: 'none', display: 'flex', gap: '14px', alignItems: 'center', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--accent-tint)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Link to="/public/members" className="public-card feature-hub-card">
+          <div className="feature-icon-box">
             <UserRound size={22} />
           </div>
           <div>
@@ -193,8 +234,8 @@ const Home = () => {
           </div>
         </Link>
 
-        <Link to="/public/sitting" className="public-card" style={{ padding: '22px', textDecoration: 'none', display: 'flex', gap: '14px', alignItems: 'center', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--accent-tint)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Link to="/public/sitting" className="public-card feature-hub-card">
+          <div className="feature-icon-box">
             <Video size={22} />
           </div>
           <div>
@@ -203,8 +244,8 @@ const Home = () => {
           </div>
         </Link>
 
-        <Link to="/public/petitions" className="public-card" style={{ padding: '22px', textDecoration: 'none', display: 'flex', gap: '14px', alignItems: 'center', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--accent-tint)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Link to="/public/petitions" className="public-card feature-hub-card">
+          <div className="feature-icon-box">
             <PenTool size={22} />
           </div>
           <div>
@@ -276,27 +317,30 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="agenda-grid">
-          {AGENDA.map((a) => {
-            const card = (
-              <>
-                <span className="tag">{a.tag}</span>
-                <h4>{a.title}</h4>
-                <p>{a.desc}</p>
-              </>
+        <div className="agenda-list">
+          {AGENDA.map((a, idx) => {
+            const content = (
+              <div className="agenda-list-item-inner">
+                <div className="agenda-time-col">
+                  <span className="tag">{a.tag}</span>
+                </div>
+                <div className="agenda-content-col">
+                  <h4>{a.title}</h4>
+                  <p>{a.desc}</p>
+                </div>
+              </div>
             );
             return a.billId ? (
               <Link
-                key={a.title}
+                key={idx}
                 to={`/public/bills/${a.billId}`}
-                className="public-card agenda-card"
-                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}
+                className="agenda-list-item"
               >
-                {card}
+                {content}
               </Link>
             ) : (
-              <div key={a.title} className="public-card agenda-card">
-                {card}
+              <div key={idx} className="agenda-list-item">
+                {content}
               </div>
             );
           })}
@@ -319,39 +363,55 @@ const Home = () => {
           </Link>
         </div>
 
-        <div className="public-bills-grid">
-          {bills.slice(0, 3).map((bill) => {
-            const rawSupport = Math.min(100, Math.max(30, (bill.votes?.aye || 65) * 1.1));
-            const roundedSupport = Math.round(rawSupport);
+        <div className="public-bills-asym-layout">
+          {/* Featured Bill (Left) */}
+          {bills.length > 0 && (
+            <div className="featured-bill-col">
+              {(() => {
+                const bill = bills[0];
+                const rawSupport = Math.min(100, Math.max(30, (bill.votes?.aye || 65) * 1.1));
+                const roundedSupport = Math.round(rawSupport);
+                return (
+                  <div key={bill.id} className="public-card public-bill-card featured-bill-card">
+                    <div className="topic">{bill.category}</div>
+                    <h2>{bill.title}</h2>
+                    <div className="plain">{bill.summary}</div>
+                    <div className="public-stage-pill">{bill.stage}</div>
 
-            return (
-              <div key={bill.id} className="public-card public-bill-card">
-                <div className="topic">{bill.category}</div>
-                <h4>{bill.title}</h4>
-                <div className="plain">{bill.summary}</div>
-                <div className="public-stage-pill">{bill.stage}</div>
+                    <div className="support-meter">
+                      <div className="bar-track">
+                        <div className="bar-fill" style={{ width: `${roundedSupport}%` }} />
+                      </div>
+                      <div className="lbl">
+                        <span>Public &amp; Chamber Support</span>
+                        <span>{roundedSupport}%</span>
+                      </div>
+                    </div>
 
-                <div className="support-meter">
-                  <div className="bar-track">
-                    <div className="bar-fill" style={{ width: `${roundedSupport}%` }} />
+                    <div className="bill-actions">
+                      <Link to={`/public/bills/${bill.id}`} className="btn btn-primary btn-md" style={{ textDecoration: 'none', width: '100%', justifyContent: 'center' }}>
+                        Read full summary
+                      </Link>
+                    </div>
                   </div>
-                  <div className="lbl">
-                    <span>Public &amp; Chamber Support</span>
-                    <span>{roundedSupport}%</span>
-                  </div>
-                </div>
+                );
+              })()}
+            </div>
+          )}
 
-                <div className="bill-actions">
-                  <Link to={`/public/bills/${bill.id}`} className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}>
-                    Read summary
-                  </Link>
-                  <Link to="/public/members" className="btn btn-primary btn-sm" style={{ textDecoration: 'none' }}>
-                    Contact your MP
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
+          {/* List of other bills (Right) */}
+          <div className="other-bills-col">
+            <h3 style={{ marginBottom: '16px', fontSize: '15px', color: 'var(--text-strong)' }}>Other active legislation</h3>
+            <div className="other-bills-list">
+              {bills.slice(1, 4).map((bill) => (
+                <Link to={`/public/bills/${bill.id}`} key={bill.id} className="other-bill-item">
+                  <div className="topic">{bill.category}</div>
+                  <h4>{bill.title}</h4>
+                  <div className="public-stage-pill">{bill.stage}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       </Reveal>

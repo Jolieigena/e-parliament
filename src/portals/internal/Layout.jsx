@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { LayoutGrid, FileText, Radio, UserCog, Users2, Menu, Vote, FileBarChart, Scroll, Megaphone, Eye } from 'lucide-react';
+import { LayoutGrid, FileText, Radio, UserCog, Users2, Menu, Vote, FileBarChart, Scroll, Megaphone, Eye, Video } from 'lucide-react';
 import { useApp } from '../../mock/store';
 import BrandMark from '../../components/ui/BrandMark';
 import GlobalSearch from '../../components/ui/GlobalSearch';

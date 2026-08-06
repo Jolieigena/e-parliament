@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { LayoutGrid, FileText, ShieldQuestion, Users2, FileStack, Landmark, Menu } from 'lucide-react';
+import { LayoutGrid, FileText, ShieldQuestion, Users2, FileStack, Landmark, Menu, Video } from 'lucide-react';
 import { useApp } from '../../mock/store';
 import BrandMark from '../../components/ui/BrandMark';
 import LiveClock from '../../components/ui/LiveClock';
@@ -14,6 +14,7 @@ const ROUTE_TITLES = {
   oversight: 'Oversight',
   'committee-requests': 'Committee Requests',
   documents: 'Documents',
+  'sittings-videos': 'Sittings Videos',
 };
 
 const Layout = () => {

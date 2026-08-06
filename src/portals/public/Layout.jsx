@@ -59,8 +59,8 @@ const Layout = () => {
       <header className="public-site-header">
         <div className="public-header-inner">
           <Link to="/public" className="public-logo">
-            <div className="portal-seal" style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--accent-tint)', borderRadius: '8px' }}>
-              <BrandMark size={18} />
+            <div className="portal-seal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
+              <BrandMark size={24} />
             </div>
             <div className="name">E-Parliament</div>
           </Link>
